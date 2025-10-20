@@ -1,0 +1,186 @@
+openapi: 3.1.0
+info:
+  title: Fuga music api
+  version: 1.0.0
+
+servers:
+  - url: /api
+    description: Local development server
+
+paths:
+  /healthz:
+    get:
+      summary: API health check
+      description: Returns the API status and uptime
+      tags:
+        - Health
+      responses:
+        "200":
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /products:
+    get:
+      summary: List all available products
+      description: Returns all available products
+      parameters:
+        - in: query
+          name: cursor
+          schema: { type: string }
+          description: Opaque pagination cursor.
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+        - in: query
+          name: q
+          schema: { type: string }
+          description: Full-text search query.
+      responses:
+        "200":
+          description: A list of available products
+          headers:
+            X-Next-Cursor:
+              schema: { type: string }
+              description: Present if there is another page.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsResponse"
+
+    post:
+      summary: Create a new product
+      description: Creates a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreate"
+      responses:
+        "201":
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{productId}:
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      summary: Get product
+      responses:
+        "200":
+          description: The product
+          headers:
+            ETag:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+components:
+  parameters:
+    ProductId:
+      in: path
+      name: productId
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Conflict:
+      description: Version conflict (ETag mismatch)
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - uptime
+      properties:
+        status:
+          type: string
+          example: ok
+        uptime:
+          type: number
+          description: Time in seconds since the API started
+          example: 123.456
+
+    Product:
+      type: Object
+      required: [id, name, artist, createdAt, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string, minLength: 1, maxLength: 200 }
+        artist: { type: string, minLength: 1, maxLength: 200 }
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImageVariantSet"
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    ProductCreate:
+      type: object
+      required: [name, artist]
+      properties:
+        name: { type: string, minLength: 1 }
+        artist: { type: string, minLength: 1 }
+        # Either reference an upload or skip and attach later
+        imageKey:
+          {
+            type: string,
+            description: "Object storage key for a previously uploaded original",
+            nullable: true,
+          }
+
+    ImageVariantSet:
+      type: object
+      required: [original]
+      properties:
+        original:
+          $ref: "#/components/schemas/ImageRef"
+        thumb:
+          $ref: "#/components/schemas/ImageRef"
+        medium:
+          $ref: "#/components/schemas/ImageRef"
+    ImageRef:
+      type: object
+      required: [url, width, height, format]
+      properties:
+        url: { type: string, format: uri }
+        width: { type: integer }
+        height: { type: integer }
+        format: { type: string, enum: [jpeg, png, webp, avif] }
+
+    ErrorResponse:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          example: "An error occurred"
+        message:
+          type: string
+          example: "Detailed error message"
+        code:
+          type: integer
+          example: 500
