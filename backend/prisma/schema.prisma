@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums ----------
+enum ImageFormat {
+  jpeg
+  png
+  webp
+}
+
+// ---------- Models ----------
+model Product {
+  id     String @id @default(uuid())
+  title  String
+  artist String
+
+  /// Opaque version token used as the ETag value.
+  version String @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 1:1 cover image (optional until attached)
+  image Image?
+
+  @@index([createdAt, id]) // for cursor pagination
+  @@index([artist])
+  @@index([title])
+}
+
+model Image {
+  id String @id @default(uuid())
+
+  // Enforce one cover image per product (unique FK -> 1:1)
+  productId String  @unique
+  product   Product @relation(fields: [productId], references: [id])
+
+  // Upload info
+  storageKey  String // object storage key for original (e.g., s3://bucket/uuid.jpg)
+  width       Int
+  height      Int
+  format      ImageFormat
+
+  createdAt   DateTime  @default(now())
+}

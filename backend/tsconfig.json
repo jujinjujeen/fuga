@@ -1,0 +1,18 @@
+{
+  "extends": "../config/tsconfig.base.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "baseUrl": ".",
+    "types": ["node", "express", "vitest"],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@f/be/*": ["./src/*"],
+      "@f/prismaInstance": ["./src/lib/prisma.ts"],
+      "@f/types/*": ["../libs/types/*"],
+      "@f/constants": ["./src/constants"],
+      "@f/redisClient": ["./src/lib/redisClient.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "prisma/**/*.ts"]
+}

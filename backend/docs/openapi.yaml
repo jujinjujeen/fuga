@@ -88,6 +88,31 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /presign:
+    post:
+      summary: Get a presigned URL for image upload
+      description: Returns a presigned URL for uploading an image to object storage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PresignRequest"
+      responses:
+        "200":
+          description: Presigned URL and storage key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PresignResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+
 components:
   parameters:
     ProductId:
@@ -130,20 +155,26 @@ components:
         id: { type: string, format: uuid }
         name: { type: string, minLength: 1, maxLength: 200 }
         artist: { type: string, minLength: 1, maxLength: 200 }
-        images:
-          type: array
-          items:
-            $ref: "#/components/schemas/ImageVariantSet"
+        image:
+          $ref: "#/components/schemas/ImageRef"
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
 
+    ProductsResponse:
+      type: object
+      required: [products]
+      properties:
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+
     ProductCreate:
       type: object
-      required: [name, artist]
+      required: [name, artist, imageKey]
       properties:
         name: { type: string, minLength: 1 }
         artist: { type: string, minLength: 1 }
-        # Either reference an upload or skip and attach later
         imageKey:
           {
             type: string,
@@ -151,16 +182,6 @@ components:
             nullable: true,
           }
 
-    ImageVariantSet:
-      type: object
-      required: [original]
-      properties:
-        original:
-          $ref: "#/components/schemas/ImageRef"
-        thumb:
-          $ref: "#/components/schemas/ImageRef"
-        medium:
-          $ref: "#/components/schemas/ImageRef"
     ImageRef:
       type: object
       required: [url, width, height, format]
@@ -168,9 +189,35 @@ components:
         url: { type: string, format: uri }
         width: { type: integer }
         height: { type: integer }
-        format: { type: string, enum: [jpeg, png, webp, avif] }
+        format: { type: string, enum: [jpeg, png, webp] }
 
-    ErrorResponse:
+    PresignRequest:
+      type: object
+      required: [fileName, fileType, fileSize]
+      properties:
+        fileName:
+          type: string
+          description: Original filename of the image
+        fileType:
+          type: string
+          description: MIME type of the image (e.g., image/png)
+        fileSize: 
+          type: integer
+          description: Size of the image in bytes
+
+    PresignResponse:
+      type: object
+      required: [url, storageKey]
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Presigned URL for uploading the image
+        storageKey:
+          type: string
+          description: Object storage key for the uploaded image
+
+    Error:
       type: object
       required:
         - title
