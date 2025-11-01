@@ -177,7 +177,7 @@ export interface components {
             id: string;
             name: string;
             artist: string;
-            images?: components["schemas"]["ImageVariantSet"][];
+            image?: components["schemas"]["ImageRef"];
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
@@ -190,12 +190,7 @@ export interface components {
             name: string;
             artist: string;
             /** @description Object storage key for a previously uploaded original */
-            imageKey?: string | null;
-        };
-        ImageVariantSet: {
-            original: components["schemas"]["ImageRef"];
-            thumb?: components["schemas"]["ImageRef"];
-            medium?: components["schemas"]["ImageRef"];
+            imageKey: string | null;
         };
         ImageRef: {
             /** Format: uri */
