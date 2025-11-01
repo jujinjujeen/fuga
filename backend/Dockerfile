@@ -8,3 +8,7 @@ COPY libs /libs
 RUN npm install
 
 COPY backend /app
+
+RUN npx prisma generate
+
+CMD sh -c "npx prisma migrate deploy && npm run dev"
