@@ -88,6 +88,30 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /presign:
+    post:
+      summary: Get a presigned URL for image upload
+      description: Returns a presigned URL for uploading an image to object storage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PresignRequest"
+      responses:
+        "200":
+          description: Presigned URL and storage key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PresignResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 
 components:
   parameters:
@@ -165,7 +189,33 @@ components:
         url: { type: string, format: uri }
         width: { type: integer }
         height: { type: integer }
-        format: { type: string, enum: [jpeg, png, webp, avif] }
+        format: { type: string, enum: [jpeg, png, webp] }
+
+    PresignRequest:
+      type: object
+      required: [fileName, fileType, fileSize]
+      properties:
+        fileName:
+          type: string
+          description: Original filename of the image
+        fileType:
+          type: string
+          description: MIME type of the image (e.g., image/png)
+        fileSize: 
+          type: integer
+          description: Size of the image in bytes
+
+    PresignResponse:
+      type: object
+      required: [url, storageKey]
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Presigned URL for uploading the image
+        storageKey:
+          type: string
+          description: Object storage key for the uploaded image
 
     Error:
       type: object

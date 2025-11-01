@@ -8,7 +8,7 @@ import path from 'path';
 
 import { router } from './api';
 import { errorHandler } from './middleware/errorHandler';
-import { CACHE } from './constants';
+import { TIME_S } from './constants';
 import { cacheMiddleware } from './middleware/cache';
 import rateLimiter from './middleware/rateLimiter';
 import { compressionMiddleware } from './middleware/compressionMiddleware';
@@ -42,7 +42,7 @@ export const createApp = () => {
 
   // Routes
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-  app.use('/api', cacheMiddleware(CACHE.ONE_HOUR));
+  app.use('/api', cacheMiddleware(TIME_S.ONE_HOUR));
   app.use('/api', router);
 
   // 404 fallback

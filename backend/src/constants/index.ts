@@ -1,12 +1,13 @@
 // Time in milliseconds
-export const TIME = {
+export const TIME_MS = {
   ONE_SECOND: 1000,
   ONE_MINUTE: 60 * 1000,
   FIFTEEN_MINUTES: 15 * 60 * 1000,
 };
 
-// Cache durations in seconds
-export const CACHE = {
+// Time in seconds
+export const TIME_S = {
+  FIFTEEN_MINUTES: 15 * 60,
   ONE_HOUR: 60 * 60,
   ONE_DAY: 24 * 60 * 60,
 };

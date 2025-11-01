@@ -12,7 +12,6 @@ enum ImageFormat {
   jpeg
   png
   webp
-  avif
 }
 
 // ---------- Models ----------

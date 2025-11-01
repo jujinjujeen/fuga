@@ -159,6 +159,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/presign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get a presigned URL for image upload
+         * @description Returns a presigned URL for uploading an image to object storage
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PresignRequest"];
+                };
+            };
+            responses: {
+                /** @description Presigned URL and storage key */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PresignResponse"];
+                    };
+                };
+                /** @description Invalid request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -198,7 +250,24 @@ export interface components {
             width: number;
             height: number;
             /** @enum {string} */
-            format: "jpeg" | "png" | "webp" | "avif";
+            format: "jpeg" | "png" | "webp";
+        };
+        PresignRequest: {
+            /** @description Original filename of the image */
+            fileName: string;
+            /** @description MIME type of the image (e.g., image/png) */
+            fileType: string;
+            /** @description Size of the image in bytes */
+            fileSize: number;
+        };
+        PresignResponse: {
+            /**
+             * Format: uri
+             * @description Presigned URL for uploading the image
+             */
+            url: string;
+            /** @description Object storage key for the uploaded image */
+            storageKey: string;
         };
         Error: {
             /** @example An error occurred */

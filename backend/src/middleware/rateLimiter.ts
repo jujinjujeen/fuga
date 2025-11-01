@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
-import { TIME } from '../constants';
+import { TIME_MS } from '../constants';
 
 /**
  * Rate limiter middleware to limit the number of requests from a single IP.
@@ -12,7 +12,7 @@ import { TIME } from '../constants';
  * 
  */
 const apiLimiter = rateLimit({
-  windowMs: TIME.FIFTEEN_MINUTES,
+  windowMs: TIME_MS.FIFTEEN_MINUTES,
   max: 100, // max requests
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
