@@ -207,12 +207,17 @@ components:
 
     PresignResponse:
       type: object
-      required: [url, storageKey]
+      required: [url, fields, storageKey]
       properties:
         url:
           type: string
           format: uri
-          description: Presigned URL for uploading the image
+          description: Presigned POST URL for uploading the image
+        fields:
+          type: object
+          additionalProperties:
+            type: string
+          description: Form fields to include in the POST request
         storageKey:
           type: string
           description: Object storage key for the uploaded image

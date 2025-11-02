@@ -1,22 +1,6 @@
-import {
-  S3Client,
-  GetObjectCommand,
-  HeadObjectCommand,
-} from '@aws-sdk/client-s3';
 import sharp from 'sharp';
 import { ImageFormat } from '@prisma/client';
-
-const TMP_BUCKET = process.env.S3_TMP_BUCKET || 'tmp';
-
-const s3Client = new S3Client({
-  endpoint: process.env.S3_ENDPOINT,
-  region: 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY!,
-    secretAccessKey: process.env.S3_SECRET_KEY!,
-  },
-  forcePathStyle: true,
-});
+import { storageService } from './storage.service';
 
 type SharpMetadata = Pick<sharp.Metadata, 'width' | 'height'> & {
   format: ImageFormat;
@@ -26,41 +10,13 @@ type SharpMetadata = Pick<sharp.Metadata, 'width' | 'height'> & {
  * Gets image metadata from S3 object
  * @param storageKey - The S3 object key
  * @returns Image metadata (width, height, format)
+ * @throws Error if metadata is invalid or unsupported format, or if retrieval fails
  */
 export const getImageMetadata = async (
   storageKey: string
 ): Promise<SharpMetadata> => {
-  // First verify the object exists
-  try {
-    await s3Client.send(
-      new HeadObjectCommand({
-        Bucket: TMP_BUCKET,
-        Key: storageKey,
-      })
-    );
-  } catch {
-    throw new Error(`Image not found in storage: ${storageKey}`);
-  }
-
-  // Get the image data
-  const response = await s3Client.send(
-    new GetObjectCommand({
-      Bucket: TMP_BUCKET,
-      Key: storageKey,
-    })
-  );
-
-  if (!response.Body) {
-    throw new Error('Failed to read image from storage');
-  }
-
-  // Convert stream to buffer
-  const chunks: Uint8Array[] = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  for await (const chunk of response.Body as any) {
-    chunks.push(chunk);
-  }
-  const buffer = Buffer.concat(chunks);
+  // Get the image buffer from storage
+  const buffer = await storageService.getObject(storageKey);
 
   // Get image metadata using sharp
   const metadata = await sharp(buffer).metadata();

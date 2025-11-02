@@ -32,8 +32,8 @@ export const Sidebar: React.FC<ISidebar> = ({ isOpen, onClose, onProductCreated 
         throw new Error(response.message || 'Failed to get presigned URL');
       }
 
-      // Upload file directly to S3/MinIO using presigned URL
-      await uploadFileToPresignedUrl(response.url, file);
+      // Upload file directly to S3/MinIO using presigned POST
+      await uploadFileToPresignedUrl(response.url, response.fields, file);
 
       setImageKey(response.storageKey);
     } catch (err) {

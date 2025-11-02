@@ -263,9 +263,13 @@ export interface components {
         PresignResponse: {
             /**
              * Format: uri
-             * @description Presigned URL for uploading the image
+             * @description Presigned POST URL for uploading the image
              */
             url: string;
+            /** @description Form fields to include in the POST request */
+            fields: {
+                [key: string]: string;
+            };
             /** @description Object storage key for the uploaded image */
             storageKey: string;
         };
