@@ -25,6 +25,7 @@ export const presignController = async (
     res.status(200).json({
       url: result.url,
       storageKey: result.storageKey,
+      fields: result.fields,
     });
   } catch (error) {
     console.error('Presign error:', error);

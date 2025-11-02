@@ -1,5 +1,6 @@
 import { imageService } from '@f/be/services/image.service';
 import { createProduct as createProductDb } from './products.repo';
+import { deleteCache, getKeyHelper } from '@f/be/lib/redisClient';
 
 export const createProduct = async (
   title: string,
@@ -22,6 +23,8 @@ export const createProduct = async (
       },
     },
   });
+
+  deleteCache(getKeyHelper('/products'));
 
   return product;
 };
