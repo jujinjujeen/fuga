@@ -2,6 +2,8 @@ import {
   S3Client,
   GetObjectCommand,
   HeadObjectCommand,
+  DeleteObjectCommand,
+  CopyObjectCommand,
 } from '@aws-sdk/client-s3';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { randomUUID } from 'crypto';
@@ -9,7 +11,7 @@ import path from 'path';
 import { MAX_FILE_SIZE_BYTES, TIME_S } from '../constants';
 
 const TMP_BUCKET = process.env.S3_TMP_BUCKET || 'tmp';
-// const PERM_BUCKET = process.env.S3_PERM_BUCKET || 'perm';
+const PERM_BUCKET = process.env.S3_PERM_BUCKET || 'perm';
 
 // Internal S3 client for backend operations (reading/writing objects)
 const s3Client = new S3Client({
@@ -181,10 +183,79 @@ export const getObject = async (storageKey: string): Promise<Buffer> => {
 };
 
 /**
+ * Removes an object from the temporary bucket
+ * @param storageKey - The S3 object key
+ * @throws Error if deletion fails
+ */
+export const removeObject = async (
+  storageKey: string,
+  bucket: 'temp' | 'perm' = 'temp'
+): Promise<void> => {
+  try {
+    await s3Client.send(
+      new DeleteObjectCommand({
+        Bucket: bucket === 'temp' ? TMP_BUCKET : PERM_BUCKET,
+        Key: storageKey,
+      })
+    );
+  } catch {
+    throw new Error(`Failed to delete object from storage: ${storageKey}`);
+  }
+};
+
+/**
+ * Moves an object from temporary bucket to permanent bucket
+ * Object has to exist in temporary bucket beforehand
+ *
+ * @param storageKey - The S3 object key (same key used in both buckets)
+ * @throws Error if object doesn't exist or operation fails
+ */
+export const moveObjectToPermanent = async (
+  storageKey: string
+): Promise<void> => {
+  try {
+    // Copy object from tmp to perm bucket (preserves metadata)
+    await s3Client.send(
+      new CopyObjectCommand({
+        Bucket: PERM_BUCKET,
+        CopySource: `${TMP_BUCKET}/${storageKey}`,
+        Key: storageKey,
+        MetadataDirective: 'COPY', // Preserve original metadata
+      })
+    );
+
+    // Delete from tmp bucket only after successful copy
+    await removeObject(storageKey, 'temp');
+  } catch (error) {
+    console.error(
+      `Failed to move object to permanent storage: ${storageKey}`,
+      error
+    );
+
+    // Attempt to clean up partial copy in perm bucket
+    try {
+      await removeObject(storageKey, 'perm');
+    } catch (cleanupError) {
+      // Log cleanup failure but don't override original error
+      console.error(
+        `Failed to cleanup partial copy in permanent storage: ${storageKey}`,
+        cleanupError
+      );
+    }
+
+    throw new Error(
+      `Failed to move object to permanent storage: ${storageKey}`
+    );
+  }
+};
+
+/**
  * Service interface for storage operations
  */
 export const storageService = {
   generatePresignedUploadUrl,
   objectExists,
   getObject,
+  removeObject,
+  moveObjectToPermanent,
 };

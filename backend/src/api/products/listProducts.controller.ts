@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getAllProducts } from './products.repo';
+import { getAllProducts } from './products.service';
 
 /**
  * GET /products - List all products
@@ -7,6 +7,7 @@ import { getAllProducts } from './products.repo';
 export const listProducts = async (_req: Request, res: Response) => {
   try {
     const products = await getAllProducts();
+
     res.status(200).json({ products });
   } catch (error) {
     console.error('List products error:', error);

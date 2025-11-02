@@ -1,7 +1,8 @@
-import { Product, Prisma } from '@prisma/client';
+import { Product, Image, Prisma } from '@prisma/client';
 import prisma from '@f/prismaInstance';
+import { ProductWithImage } from '@f/be/types/shared';
 
-export const getAllProducts = async (): Promise<Product[]> => {
+export const getAllProducts = async (): Promise<ProductWithImage[]> => {
   return prisma.product.findMany({
     include: {
       image: true,
