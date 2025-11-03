@@ -1,25 +1,26 @@
 import classNames from 'classnames';
 import { useEffect } from 'react';
-import { SidebarHeader } from './SidebarHeader';
-import { ProductForm } from './ProductForm';
-import type { Product } from '@f/types/api-schemas';
 
-interface ISidebar {
+interface SidebarProps {
   isOpen: boolean;
+
   onClose: () => void;
-  onProductCreated?: () => void;
-  mode?: 'create' | 'edit';
-  initialData?: Product;
+  children: React.ReactNode;
+  width?: string;
+  ariaLabel?: string;
 }
 
-export const Sidebar: React.FC<ISidebar> = ({
+/**
+ * Generic sidebar component with slide-in animation and backdrop
+ * Handles UI concerns only - content is passed as children
+ */
+export const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onClose,
-  onProductCreated,
-  mode = 'create',
-  initialData,
+  children,
+  width = 'w-full sm:w-[420px] md:w-[500px]',
+  ariaLabel = 'Sidebar',
 }) => {
-
   // Prevent body scroll when sidebar is open
   useEffect(() => {
     if (isOpen) {
@@ -44,29 +45,18 @@ export const Sidebar: React.FC<ISidebar> = ({
         aria-hidden={!isOpen}
       />
 
-      {/* Sidebar */}
+      {/* Sidebar Panel */}
       <aside
         className={classNames([
-          'fixed top-0 right-0 h-full w-full sm:w-[420px] md:w-[500px] bg-white shadow-2xl z-50 transform transition-all duration-300 ease-out',
+          'fixed top-0 right-0 h-full bg-white shadow-2xl z-50 transform transition-all duration-300 ease-out',
+          width,
           isOpen ? 'translate-x-0 scale-100' : 'translate-x-full scale-95',
         ])}
-        aria-label="Add product form"
+        aria-label={ariaLabel}
         role="dialog"
         aria-modal="true"
       >
-        <div className="flex flex-col h-full">
-          <SidebarHeader
-            title={mode === 'create' ? 'Add New Product' : 'Edit Product'}
-            onClose={onClose}
-          />
-
-          <ProductForm
-            mode={mode}
-            initialData={initialData}
-            onSuccess={onProductCreated}
-            onClose={onClose}
-          />
-        </div>
+        {children}
       </aside>
     </>
   );

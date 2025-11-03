@@ -1,3 +1,4 @@
+import { SidebarHeader } from './SidebarHeader';
 import { ImageUpload } from './ImageUpload';
 import { ProductFormFields } from './ProductFormFields';
 import { SidebarFooter } from './SidebarFooter';
@@ -36,7 +37,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   });
 
   return (
-    <>
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <SidebarHeader
+        title={mode === 'create' ? 'Add New Product' : 'Edit Product'}
+        onClose={onClose || (() => {})}
+      />
+
       {/* Form Content */}
       <form
         onSubmit={handleSubmit}
@@ -66,12 +73,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         />
       </form>
 
+      {/* Footer */}
       <SidebarFooter
         onReset={handleReset}
         onSubmit={handleSubmit}
         isSubmitDisabled={!isFormValid}
         isSubmitting={isSubmitting}
       />
-    </>
+    </div>
   );
 };
