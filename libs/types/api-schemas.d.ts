@@ -7,3 +7,4 @@ export type PresignRequest = components['schemas']['PresignRequest'];
 export type Product = components['schemas']['Product'];
 export type ProductCreate = components['schemas']['ProductCreate'];
 export type ProductsResponse = components['schemas']['ProductsResponse'];
+export type ProductResponse = components['schemas']['Product'];

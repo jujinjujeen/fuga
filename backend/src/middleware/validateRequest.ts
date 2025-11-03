@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AnyZodObject, ZodError } from 'zod';
 import { HTTP_LABEL, HTTP_STATUS } from '../constants';
-import { ErrorResponse } from '@f/types/api-schemas';
+import type { ErrorResponse } from '@f/types/api-schemas';
 
 type ValidationSource = 'body' | 'params' | 'query';
 

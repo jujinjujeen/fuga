@@ -18,9 +18,8 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({
       <Button
         type="button"
         variant="soft"
-        color="gray"
         onClick={onReset}
-        className="flex-1 transition-all hover:scale-105 dark:color-gray-400"
+        className="flex-1 transition-all hover:scale-105 dark:color-white dark:bg-gray-800"
         size="3"
         disabled={isSubmitting}
       >
@@ -31,7 +30,6 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({
         onClick={onSubmit}
         className="flex-1 shadow-lg hover:shadow-xl transition-all hover:scale-105"
         size="3"
-        highContrast
         disabled={isSubmitDisabled || isSubmitting}
         loading={isSubmitting}
       >

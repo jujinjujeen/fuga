@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Request, Response } from 'express';
 import { healthController } from '../health.controller';
 import prisma from '@f/prismaInstance';
-import { HealthResponse, ErrorResponse } from '@f/types/api-schemas';
+import type { HealthResponse, ErrorResponse } from '@f/types/api-schemas';
 
 vi.mock('@f/prismaInstance', () => ({
   default: {
