@@ -1,75 +1,27 @@
 import { Text } from '@radix-ui/themes';
 import { Upload, Loader2 } from 'lucide-react';
-import { useRef, useState } from 'react';
 
 interface ImageUploadProps {
-  /**
-   * Callback when image is selected and ready to upload
-   * Returns the file and a callback to clear the selection
-   */
-  onImageSelected: (file: File, clear: () => void) => void;
-  /**
-   * Optional storage key after successful upload to presigned URL
-   */
-  storageKey?: string | null;
-  /**
-   * Loading state during upload
-   */
-  isUploading?: boolean;
-  /**
-   * Error message to display
-   */
-  error?: string | null;
-  setError: (error: string) => void;
+  // Image preview data URL
+  imagePreview: string | null;
+  // Storage key after successful upload to presigned URL
+  storageKey: string | null;
+  isUploading: boolean;
+  // Error message to display
+  error: string | null;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ACCEPTED_FORMATS = ['image/png', 'image/jpeg', 'image/webp'];
-
 export const ImageUpload: React.FC<ImageUploadProps> = ({
-  onImageSelected,
+  imagePreview,
   storageKey,
-  isUploading = false,
-  setError,
+  isUploading,
   error,
+  fileInputRef,
+  onFileChange,
 }) => {
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const clearSelection = () => {
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate file type
-    if (!ACCEPTED_FORMATS.includes(file.type)) {
-      setError('Invalid file format. Please upload PNG, JPG, or WEBP.');
-      return;
-    }
-
-    // Validate file size
-    if (file.size > MAX_FILE_SIZE) {
-      setError('File size too large. Maximum size is 10MB.');
-      return;
-    }
-
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    // Notify parent
-    onImageSelected(file, clearSelection);
-  };
-
   const handleClick = () => {
     if (!isUploading) {
       fileInputRef.current?.click();
@@ -105,10 +57,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                 size={40}
                 className="text-indigo-600  animate-spin mx-auto"
               />
-              <Text
-                size="2"
-                className="font-semibold text-gray-700 "
-              >
+              <Text size="2" className="font-semibold text-gray-700 ">
                 Uploading...
               </Text>
             </div>
@@ -145,11 +94,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               />
             </div>
             <div className="space-y-1">
-              <Text
-                as="p"
-                size="3"
-                className="font-semibold text-gray-700 "
-              >
+              <Text as="p" size="3" className="font-semibold text-gray-700 ">
                 Click to upload cover image
               </Text>
               <Text size="2" className="text-gray-500 ">
@@ -164,7 +109,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           id="cover-image"
           type="file"
           accept="image/png,image/jpeg,image/webp"
-          onChange={handleFileChange}
+          onChange={onFileChange}
           className="hidden"
           aria-describedby="cover-image-description"
           disabled={isUploading}
@@ -178,11 +123,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       )}
 
       {!error && (
-        <Text
-          id="cover-image-description"
-          size="1"
-          className="text-gray-500 "
-        >
+        <Text size="1" className="text-gray-500 ">
           Upload cover image for the product
         </Text>
       )}
