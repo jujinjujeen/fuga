@@ -14,12 +14,12 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({
   isSubmitting = false,
 }) => {
   return (
-    <div className="border-t border-gray-200 dark:border-gray-800 p-4 sm:p-6 flex gap-3 bg-gray-50 dark:bg-gray-900/50">
+    <div className="border-t border-gray-200  p-4 sm:p-6 flex gap-3 bg-gray-50 ">
       <Button
         type="button"
         variant="soft"
         onClick={onReset}
-        className="flex-1 transition-all hover:scale-105 dark:color-white dark:bg-gray-800"
+        className="flex-1 transition-all hover:scale-105  "
         size="3"
         disabled={isSubmitting}
       >

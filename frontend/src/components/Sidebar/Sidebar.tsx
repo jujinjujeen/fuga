@@ -13,7 +13,11 @@ interface ISidebar {
   onProductCreated?: () => void;
 }
 
-export const Sidebar: React.FC<ISidebar> = ({ isOpen, onClose, onProductCreated }) => {
+export const Sidebar: React.FC<ISidebar> = ({
+  isOpen,
+  onClose,
+  onProductCreated,
+}) => {
   const [title, setTitle] = useState('');
   const [artist, setArtist] = useState('');
   const [imageKey, setImageKey] = useState<string | null>(null);
@@ -116,7 +120,7 @@ export const Sidebar: React.FC<ISidebar> = ({ isOpen, onClose, onProductCreated 
       {/* Sidebar */}
       <aside
         className={classNames([
-          'fixed top-0 right-0 h-full w-full sm:w-[420px] md:w-[500px] bg-white dark:bg-gray-900 shadow-2xl z-50 transform transition-all duration-300 ease-out',
+          'fixed top-0 right-0 h-full w-full sm:w-[420px] md:w-[500px] bg-white shadow-2xl z-50 transform transition-all duration-300 ease-out',
           isOpen ? 'translate-x-0 scale-100' : 'translate-x-full scale-95',
         ])}
         aria-label="Add product form"
@@ -132,8 +136,8 @@ export const Sidebar: React.FC<ISidebar> = ({ isOpen, onClose, onProductCreated 
             className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6"
           >
             {errors.submit && (
-              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.submit}</p>
+              <div className="p-4 bg-red-50  border border-red-200  rounded-lg">
+                <p className="text-sm text-red-600 ">{errors.submit}</p>
               </div>
             )}
 

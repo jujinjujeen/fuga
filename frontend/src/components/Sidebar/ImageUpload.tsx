@@ -80,14 +80,14 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     <div className="space-y-3">
       <label
         htmlFor="cover-image"
-        className="block text-sm font-semibold text-gray-700 dark:text-gray-300"
+        className="block text-sm font-semibold text-gray-700 "
       >
         Cover Image <span className="text-red-500 text-xs">*</span>{' '}
         {storageKey && '(Uploaded)'}
       </label>
 
       <div
-        className="relative border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl p-8 hover:border-indigo-400 dark:hover:border-indigo-600 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-all cursor-pointer group"
+        className="relative border-2 border-dashed border-gray-300  rounded-2xl p-8 hover:border-indigo-400  hover:bg-indigo-50/50  transition-all cursor-pointer group"
         onClick={handleClick}
         role="button"
         tabIndex={0}
@@ -99,15 +99,15 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         }}
       >
         {isUploading && (
-          <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 rounded-2xl flex items-center justify-center z-10">
+          <div className="absolute inset-0 bg-white/90  rounded-2xl flex items-center justify-center z-10">
             <div className="text-center space-y-2">
               <Loader2
                 size={40}
-                className="text-indigo-600 dark:text-indigo-400 animate-spin mx-auto"
+                className="text-indigo-600  animate-spin mx-auto"
               />
               <Text
                 size="2"
-                className="font-semibold text-gray-700 dark:text-gray-300"
+                className="font-semibold text-gray-700 "
               >
                 Uploading...
               </Text>
@@ -137,10 +137,10 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center text-center space-y-4 py-6">
-            <div className="p-4 bg-indigo-100 dark:bg-indigo-900/30 rounded-full group-hover:scale-110 transition-transform">
+            <div className="p-4 bg-indigo-100  rounded-full group-hover:scale-110 transition-transform">
               <Upload
                 size={40}
-                className="text-indigo-600 dark:text-indigo-400"
+                className="text-indigo-600 "
                 aria-hidden="true"
               />
             </div>
@@ -148,11 +148,11 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               <Text
                 as="p"
                 size="3"
-                className="font-semibold text-gray-700 dark:text-gray-300"
+                className="font-semibold text-gray-700 "
               >
                 Click to upload cover image
               </Text>
-              <Text size="2" className="text-gray-500 dark:text-gray-400">
+              <Text size="2" className="text-gray-500 ">
                 PNG, JPG, WEBP up to 10MB
               </Text>
             </div>
@@ -172,7 +172,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       </div>
 
       {error && (
-        <Text size="1" className="text-red-500 dark:text-red-400">
+        <Text size="1" className="text-red-500 ">
           {error}
         </Text>
       )}
@@ -181,7 +181,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         <Text
           id="cover-image-description"
           size="1"
-          className="text-gray-500 dark:text-gray-400"
+          className="text-gray-500 "
         >
           Upload cover image for the product
         </Text>

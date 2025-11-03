@@ -8,7 +8,7 @@ interface IProductImage {
 
 export const ProductImage: React.FC<IProductImage> = ({ image, title }) => {
   return (
-    <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-gray-700 dark:to-gray-900">
+    <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-indigo-100 to-purple-100  ">
       {image?.url ? (
         <img
           src={image.url}
@@ -20,7 +20,7 @@ export const ProductImage: React.FC<IProductImage> = ({ image, title }) => {
         <div className="w-full h-full flex items-center justify-center">
           <Music
             size={64}
-            className="text-indigo-400 dark:text-indigo-600 opacity-50"
+            className="text-indigo-400  opacity-50"
             aria-hidden="true"
           />
         </div>

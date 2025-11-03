@@ -19,7 +19,7 @@ export const ProductFormFields: React.FC<ProductFormFieldsProps> = ({
       <div className="space-y-3">
         <label
           htmlFor="title"
-          className="block text-sm font-semibold text-gray-700 dark:text-gray-300"
+          className="block text-sm font-semibold text-gray-700 "
         >
           Title <span className="text-red-500 text-xs">*</span>
         </label>
@@ -40,7 +40,7 @@ export const ProductFormFields: React.FC<ProductFormFieldsProps> = ({
       <div className="space-y-3">
         <label
           htmlFor="artist"
-          className="block text-sm font-semibold text-gray-700 dark:text-gray-300"
+          className="block text-sm font-semibold text-gray-700 "
         >
           Artist <span className="text-red-500 text-xs">*</span>
         </label>
