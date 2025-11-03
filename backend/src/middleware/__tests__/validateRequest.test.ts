@@ -78,7 +78,7 @@ describe('validateRequest middleware', () => {
       expect(res.json).toHaveBeenCalledOnce();
       const sent = (res.json as Mock)?.mock?.calls?.[0]?.[0] as ErrorResponse;
 
-      expect(sent.error).toBe(HTTP_LABEL.BAD_REQUEST);
+      expect(sent.title).toBe(HTTP_LABEL.BAD_REQUEST);
       expect(sent.code).toBe(HTTP_STATUS.BAD_REQUEST);
 
       // message should start with "Request validation failed:" and include both Zod messages
