@@ -1,5 +1,5 @@
 interface ErrorMessageProps {
-  error: Error;
+  error: string;
   onRetry?: () => void;
 }
 
@@ -20,7 +20,7 @@ export const ErrorMessage = ({ error, onRetry }: ErrorMessageProps) => {
         Oops! Something went wrong
       </h3>
       <p className="text-red-600 dark:text-red-300 mb-4" id="error-message">
-        {error.message}
+        {error}
       </p>
       {onRetry && (
         <button

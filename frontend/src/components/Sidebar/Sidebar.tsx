@@ -5,17 +5,20 @@ import { ImageUpload } from './ImageUpload';
 import { ProductFormFields } from './ProductFormFields';
 import { SidebarFooter } from './SidebarFooter';
 import { getPresignedUrl, uploadFileToPresignedUrl } from '../../api/upload';
+import { createProduct } from '../../api/products';
 
 interface ISidebar {
   isOpen: boolean;
   onClose: () => void;
+  onProductCreated?: () => void;
 }
 
-export const Sidebar: React.FC<ISidebar> = ({ isOpen, onClose }) => {
+export const Sidebar: React.FC<ISidebar> = ({ isOpen, onClose, onProductCreated }) => {
   const [title, setTitle] = useState('');
   const [artist, setArtist] = useState('');
   const [imageKey, setImageKey] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleImageSelected = async (file: File, clear: () => void) => {
@@ -23,41 +26,67 @@ export const Sidebar: React.FC<ISidebar> = ({ isOpen, onClose }) => {
     setErrors({ ...errors, image: '' });
 
     try {
-      // Get presigned URL from backend
       const response = await getPresignedUrl(file.name, file.type, file.size);
 
-      // Check if response is an error
       if ('title' in response) {
         throw new Error(response.message || 'Failed to get presigned URL');
       }
 
-      // Upload file directly to S3/MinIO using presigned URL
-      await uploadFileToPresignedUrl(response.url, file);
+      // Upload file directly to S3/MinIO using presigned POST
+      await uploadFileToPresignedUrl(response.url, response.fields, file);
 
-      // Store storage key for form submission
       setImageKey(response.storageKey);
     } catch (err) {
       setErrors({
         ...errors,
         image: err instanceof Error ? err.message : 'Upload failed',
       });
-      clear(); // Clear selection on error
+      clear();
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Submit form to backend
-    console.log({ title, artist, imageKey });
+
+    if (!imageKey) {
+      setErrors({ ...errors, image: 'Please upload an image' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrors({});
+
+    try {
+      await createProduct({
+        title,
+        artist,
+        imageKey,
+      });
+
+      // Reset form and close sidebar
+      handleReset();
+      onClose();
+
+      if (onProductCreated) {
+        onProductCreated();
+      }
+    } catch (err) {
+      setErrors({
+        ...errors,
+        submit: err instanceof Error ? err.message : 'Failed to create product',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
     setTitle('');
     setArtist('');
     setImageKey(null);
-    setErrors({ ...errors, image: '' });
+    setErrors({});
   };
 
   // Prevent body scroll when sidebar is open
@@ -102,6 +131,12 @@ export const Sidebar: React.FC<ISidebar> = ({ isOpen, onClose }) => {
             onSubmit={handleSubmit}
             className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6"
           >
+            {errors.submit && (
+              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.submit}</p>
+              </div>
+            )}
+
             <ImageUpload
               onImageSelected={handleImageSelected}
               storageKey={imageKey}
@@ -123,6 +158,7 @@ export const Sidebar: React.FC<ISidebar> = ({ isOpen, onClose }) => {
             onReset={handleReset}
             onSubmit={handleSubmit}
             isSubmitDisabled={!title || !artist || !imageKey || isUploading}
+            isSubmitting={isSubmitting}
           />
         </div>
       </aside>

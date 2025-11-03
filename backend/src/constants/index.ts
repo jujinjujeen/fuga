@@ -7,10 +7,13 @@ export const TIME_MS = {
 
 // Time in seconds
 export const TIME_S = {
+  FIVE_MINUTES: 5 * 60,
   FIFTEEN_MINUTES: 15 * 60,
   ONE_HOUR: 60 * 60,
   ONE_DAY: 24 * 60 * 60,
 };
+
+export const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 
 export const HTTP_STATUS = {
   OK: 200,

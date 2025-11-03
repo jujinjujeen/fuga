@@ -150,10 +150,10 @@ components:
 
     Product:
       type: Object
-      required: [id, name, artist, createdAt, updatedAt]
+      required: [id, title, artist, createdAt, updatedAt]
       properties:
         id: { type: string, format: uuid }
-        name: { type: string, minLength: 1, maxLength: 200 }
+        title: { type: string, minLength: 1, maxLength: 200 }
         artist: { type: string, minLength: 1, maxLength: 200 }
         image:
           $ref: "#/components/schemas/ImageRef"
@@ -171,9 +171,9 @@ components:
 
     ProductCreate:
       type: object
-      required: [name, artist, imageKey]
+      required: [title, artist, imageKey]
       properties:
-        name: { type: string, minLength: 1 }
+        title: { type: string, minLength: 1 }
         artist: { type: string, minLength: 1 }
         imageKey:
           {
@@ -207,12 +207,17 @@ components:
 
     PresignResponse:
       type: object
-      required: [url, storageKey]
+      required: [url, fields, storageKey]
       properties:
         url:
           type: string
           format: uri
-          description: Presigned URL for uploading the image
+          description: Presigned POST URL for uploading the image
+        fields:
+          type: object
+          additionalProperties:
+            type: string
+          description: Form fields to include in the POST request
         storageKey:
           type: string
           description: Object storage key for the uploaded image

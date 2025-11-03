@@ -227,7 +227,7 @@ export interface components {
         Product: {
             /** Format: uuid */
             id: string;
-            name: string;
+            title: string;
             artist: string;
             image?: components["schemas"]["ImageRef"];
             /** Format: date-time */
@@ -239,7 +239,7 @@ export interface components {
             products: components["schemas"]["Product"][];
         };
         ProductCreate: {
-            name: string;
+            title: string;
             artist: string;
             /** @description Object storage key for a previously uploaded original */
             imageKey: string | null;
@@ -263,9 +263,13 @@ export interface components {
         PresignResponse: {
             /**
              * Format: uri
-             * @description Presigned URL for uploading the image
+             * @description Presigned POST URL for uploading the image
              */
             url: string;
+            /** @description Form fields to include in the POST request */
+            fields: {
+                [key: string]: string;
+            };
             /** @description Object storage key for the uploaded image */
             storageKey: string;
         };

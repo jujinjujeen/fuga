@@ -20,6 +20,8 @@ try {
 
 export default redis;
 
+export const getKeyHelper = (routePath: string) => `cache:/api${routePath}`;
+
 export const deleteCache = async (key: string) => {
   try {
     await redis.del(key);
@@ -28,6 +30,7 @@ export const deleteCache = async (key: string) => {
     console.error(`Failed to delete cache for key ${key}:`, error);
   }
 };
+
 export const clearCache = async () => {
   try {
     const keys = await redis.keys('cache:*');

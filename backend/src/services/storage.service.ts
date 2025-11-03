@@ -1,33 +1,20 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import {
+  S3Client,
+  GetObjectCommand,
+  HeadObjectCommand,
+  DeleteObjectCommand,
+  CopyObjectCommand,
+} from '@aws-sdk/client-s3';
+import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { randomUUID } from 'crypto';
 import path from 'path';
-import { TIME_S } from '../constants';
-
-const TMP_BUCKET = process.env.S3_TMP_BUCKET || 'tmp';
-// const PERM_BUCKET = process.env.S3_PERM_BUCKET || 'perm';
-
-// Internal S3 client for backend operations
-const s3Client = new S3Client({
-  endpoint: process.env.S3_ENDPOINT,
-  region: 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY!,
-    secretAccessKey: process.env.S3_SECRET_KEY!,
-  },
-  forcePathStyle: true,
-});
-
-// Public S3 client for generating presigned URLs accessible from browser
-const s3PublicClient = new S3Client({
-  endpoint: process.env.S3_PUBLIC_ENDPOINT,
-  region: 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY!,
-    secretAccessKey: process.env.S3_SECRET_KEY!,
-  },
-  forcePathStyle: true,
-});
+import { MAX_FILE_SIZE_BYTES, TIME_S } from '../constants';
+import {
+  s3ClientInt,
+  s3PublicClient,
+  TMP_BUCKET,
+  PERM_BUCKET,
+} from '../lib/s3';
 
 /**
  * Validates file type for image uploads
@@ -57,24 +44,30 @@ const isValidFileSize = (fileSize: number): boolean => {
 const generateStorageKey = (fileName: string): string => {
   const uuid = randomUUID();
   const ext = path.extname(fileName);
-  const sanitizedName = path.basename(fileName, ext).replace(/[^a-zA-Z0-9-_]/g, '_');
+  const sanitizedName = path
+    .basename(fileName, ext)
+    .replace(/[^a-zA-Z0-9-_]/g, '_');
   return `${uuid}/${sanitizedName}${ext}`;
 };
 
 /**
- * Generates a presigned URL for uploading to temporary bucket
+ * Generates a presigned POST for uploading to temporary bucket
  *
  * @param fileName - Original filename
  * @param fileType - MIME type
  * @param fileSize - Size in bytes
- * @returns Object containing presigned URL and storage key
+ * @returns Object containing presigned POST data (url, fields) and storage key
  * @throws Error if validation fails
  */
 export const generatePresignedUploadUrl = async (
   fileName: string,
   fileType: string,
   fileSize: number
-): Promise<{ url: string; storageKey: string }> => {
+): Promise<{
+  url: string;
+  fields: Record<string, string>;
+  storageKey: string;
+}> => {
   // Validate inputs
   if (!fileName || typeof fileName !== 'string') {
     throw new Error('Invalid filename');
@@ -91,20 +84,150 @@ export const generatePresignedUploadUrl = async (
   // Generate unique storage key
   const storageKey = generateStorageKey(fileName);
 
-  // Create S3 command with security headers
-  const command = new PutObjectCommand({
+  // Create presigned POST with security conditions
+  const { url, fields } = await createPresignedPost(s3PublicClient, {
     Bucket: TMP_BUCKET,
     Key: storageKey,
-    ContentType: fileType,
-    ContentLength: fileSize,
+    Conditions: [
+      ['content-length-range', 0, MAX_FILE_SIZE_BYTES], // 10MB max
+      ['eq', '$Content-Type', fileType], // Enforce exact content type
+    ],
+    Fields: {
+      'Content-Type': fileType,
+    },
+    Expires: TIME_S.FIVE_MINUTES,
   });
 
-  // Generate presigned URL using public client so signature matches public endpoint
-  const url = await getSignedUrl(s3PublicClient, command, {
-    expiresIn: TIME_S.FIFTEEN_MINUTES,
-  });
+  return { url, fields, storageKey };
+};
 
-  return { url, storageKey };
+/**
+ * Checks if an object exists in the temporary bucket
+ * @param storageKey - The S3 object key
+ * @returns true if object exists, false otherwise
+ * @throws Error if unable to check existence
+ */
+export const objectExists = async (storageKey: string): Promise<boolean> => {
+  try {
+    await s3ClientInt.send(
+      new HeadObjectCommand({
+        Bucket: TMP_BUCKET,
+        Key: storageKey,
+      })
+    );
+    return true;
+  } catch (error: unknown) {
+    // AWS SDK throws error with name 'NotFound' when object doesn't exist
+    if (error && typeof error === 'object' && 'name' in error) {
+      if (error.name === 'NotFound') {
+        return false;
+      }
+    }
+    // Re-throw other errors
+    throw new Error(`Failed to check object existence: ${storageKey}`);
+  }
+};
+
+/**
+ * Retrieves an object from the temporary bucket as a Buffer
+ * @param storageKey - The S3 object key
+ * @returns Buffer containing the object data
+ * @throws Error if object not found or failed to retrieve
+ */
+export const getObject = async (storageKey: string): Promise<Buffer> => {
+  // Verify object exists first
+  const exists = await objectExists(storageKey);
+  if (!exists) {
+    throw new Error(`Object not found in storage: ${storageKey}`);
+  }
+
+  // Get the object data
+  const response = await s3ClientInt.send(
+    new GetObjectCommand({
+      Bucket: TMP_BUCKET,
+      Key: storageKey,
+    })
+  );
+
+  if (!response.Body) {
+    throw new Error(`Failed to read object from storage: ${storageKey}`);
+  }
+
+  // Convert stream to buffer
+  const chunks: Uint8Array[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  for await (const chunk of response.Body as any) {
+    chunks.push(chunk);
+  }
+
+  return Buffer.concat(chunks);
+};
+
+/**
+ * Removes an object from the temporary bucket
+ * @param storageKey - The S3 object key
+ * @throws Error if deletion fails
+ */
+export const removeObject = async (
+  storageKey: string,
+  bucket: 'temp' | 'perm' = 'temp'
+): Promise<void> => {
+  try {
+    await s3ClientInt.send(
+      new DeleteObjectCommand({
+        Bucket: bucket === 'temp' ? TMP_BUCKET : PERM_BUCKET,
+        Key: storageKey,
+      })
+    );
+  } catch {
+    throw new Error(`Failed to delete object from storage: ${storageKey}`);
+  }
+};
+
+/**
+ * Moves an object from temporary bucket to permanent bucket
+ * Object has to exist in temporary bucket beforehand
+ *
+ * @param storageKey - The S3 object key (same key used in both buckets)
+ * @throws Error if object doesn't exist or operation fails
+ */
+export const moveObjectToPermanent = async (
+  storageKey: string
+): Promise<void> => {
+  try {
+    // Copy object from tmp to perm bucket (preserves metadata)
+    await s3ClientInt.send(
+      new CopyObjectCommand({
+        Bucket: PERM_BUCKET,
+        CopySource: `${TMP_BUCKET}/${storageKey}`,
+        Key: storageKey,
+        MetadataDirective: 'COPY', // Preserve original metadata
+      })
+    );
+
+    // Delete from tmp bucket only after successful copy
+    await removeObject(storageKey, 'temp');
+  } catch (error) {
+    console.error(
+      `Failed to move object to permanent storage: ${storageKey}`,
+      error
+    );
+
+    // Attempt to clean up partial copy in perm bucket
+    try {
+      await removeObject(storageKey, 'perm');
+    } catch (cleanupError) {
+      // Log cleanup failure but don't override original error
+      console.error(
+        `Failed to cleanup partial copy in permanent storage: ${storageKey}`,
+        cleanupError
+      );
+    }
+
+    throw new Error(
+      `Failed to move object to permanent storage: ${storageKey}`
+    );
+  }
 };
 
 /**
@@ -112,4 +235,8 @@ export const generatePresignedUploadUrl = async (
  */
 export const storageService = {
   generatePresignedUploadUrl,
+  objectExists,
+  getObject,
+  removeObject,
+  moveObjectToPermanent,
 };

@@ -25,11 +25,13 @@ export const presignController = async (
     res.status(200).json({
       url: result.url,
       storageKey: result.storageKey,
+      fields: result.fields,
     });
   } catch (error) {
     console.error('Presign error:', error);
 
-    const message = error instanceof Error ? error.message : 'Failed to generate upload URL';
+    const message =
+      error instanceof Error ? error.message : 'Failed to generate upload URL';
 
     res.status(400).json({
       title: 'Upload URL Generation Failed',
