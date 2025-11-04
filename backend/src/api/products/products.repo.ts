@@ -1,4 +1,4 @@
-import { Product, Image, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import prisma from '@f/prismaInstance';
 import { ProductWithImage } from '@f/be/types/shared';
 
@@ -14,13 +14,29 @@ export const getAllProducts = async (): Promise<ProductWithImage[]> => {
 };
 
 /**
+ * Gets a single product by ID
+ * @param id - Product UUID
+ * @returns Product with image relation or null if not found
+ */
+export const getProductById = async (
+  id: string
+): Promise<ProductWithImage | null> => {
+  return prisma.product.findUnique({
+    where: { id },
+    include: {
+      image: true,
+    },
+  });
+};
+
+/**
  * Creates a new product with associated image
  * @param data - Product creation data including image info
  * @returns Created product with image relation
  */
 export const createProduct = async (
   data: Prisma.ProductCreateInput
-): Promise<Product> => {
+): Promise<ProductWithImage> => {
   return prisma.product.create({
     data,
     include: {

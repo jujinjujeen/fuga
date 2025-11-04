@@ -2,22 +2,23 @@ import { imageService } from '@f/be/services/image.service';
 import {
   createProduct as createProductDb,
   getAllProducts as getAllProductsDb,
+  getProductById as getProductByIdDb,
 } from './products.repo';
 import { deleteCache, getKeyHelper } from '@f/be/lib/redisClient';
 import {
   moveObjectToPermanent,
   removeObject,
 } from '@f/be/services/storage.service';
-import { mapProducts } from '@f/be/mappers/products.mapper';
+import { mapProducts, mapProduct } from '@f/be/mappers/products.mapper';
 
 /**
  * Creates a new product with associated image,
  * promotes image to permanent storage, and handles cleanup on failure.
- * 
+ *
  * @param title string
  * @param artist string
  * @param imageKey string
- * @returns 
+ * @returns
  */
 export const createProduct = async (
   title: string,
@@ -48,7 +49,7 @@ export const createProduct = async (
     // Invalidate products cache
     deleteCache(getKeyHelper('/products'));
 
-    return product;
+    return mapProduct(product);
   } catch (error) {
     if (error instanceof Error) {
       // Cleanup: remove the uploaded image if product creation fails due to image issues
@@ -65,11 +66,27 @@ export const createProduct = async (
 
 /**
  * Gets all products with their images mapped to DTOs
- * 
- * @returns 
+ *
+ * @returns
  */
 export const getAllProducts = async () => {
   const products = await getAllProductsDb();
 
   return mapProducts(products);
+};
+
+/**
+ * Gets a single product by ID with image mapped to DTO
+ *
+ * @param id - Product UUID
+ * @returns Product DTO or null if not found
+ */
+export const getProductById = async (id: string) => {
+  const product = await getProductByIdDb(id);
+
+  if (!product) {
+    return null;
+  }
+
+  return mapProduct(product);
 };

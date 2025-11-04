@@ -90,8 +90,9 @@ describe('storage.service', () => {
     });
 
     it('returns false when object not found', async () => {
-      const notFoundError = new Error('Not Found');
-      (notFoundError as any).name = 'NotFound';
+      const notFoundError = Object.assign(new Error('Not Found'), {
+        name: 'NotFound',
+      });
       vi.mocked(s3ClientInt.send).mockRejectedValue(notFoundError);
 
       const result = await objectExists('nonexistent-key');
@@ -100,8 +101,9 @@ describe('storage.service', () => {
     });
 
     it('throws error for other S3 errors', async () => {
-      const s3Error = new Error('S3 Error');
-      (s3Error as any).name = 'InternalError';
+      const s3Error = Object.assign(new Error('S3 Error'), {
+        name: 'InternalError',
+      });
       vi.mocked(s3ClientInt.send).mockRejectedValue(s3Error);
 
       await expect(objectExists('test-key')).rejects.toThrow(

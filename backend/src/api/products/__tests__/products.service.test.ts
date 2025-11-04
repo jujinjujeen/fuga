@@ -26,6 +26,7 @@ vi.mock('@f/be/services/storage.service', () => ({
 
 vi.mock('@f/be/mappers/products.mapper', () => ({
   mapProducts: vi.fn(),
+  mapProduct: vi.fn(),
 }));
 
 import { imageService } from '@f/be/services/image.service';
@@ -38,7 +39,8 @@ import {
   moveObjectToPermanent,
   removeObject,
 } from '@f/be/services/storage.service';
-import { mapProducts } from '@f/be/mappers/products.mapper';
+import { mapProducts, mapProduct } from '@f/be/mappers/products.mapper';
+import { Product } from '@f/types/api-schemas';
 
 describe('products.service', () => {
   beforeEach(() => {
@@ -70,11 +72,26 @@ describe('products.service', () => {
     } as ProductWithImage;
 
     it('creates product and moves image to permanent storage', async () => {
+      const mockMappedProduct: Product = {
+        id: '123e4567-e89b-12d3-a456-426614174000',
+        title: 'Test Album',
+        artist: 'Test Artist',
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-02T00:00:00.000Z',
+        image: {
+          url: 'http://localhost:9000/perm/test-key',
+          width: 1200,
+          height: 1200,
+          format: 'jpeg',
+        },
+      };
+
       vi.mocked(imageService.getImageMetadata).mockResolvedValue(
         mockImageMetadata
       );
       vi.mocked(moveObjectToPermanent).mockResolvedValue();
       vi.mocked(createProductDb).mockResolvedValue(mockProduct);
+      vi.mocked(mapProduct).mockReturnValue(mockMappedProduct);
       vi.mocked(getKeyHelper).mockReturnValue('/products-cache-key');
       vi.mocked(deleteCache).mockResolvedValue(undefined);
 
@@ -98,8 +115,9 @@ describe('products.service', () => {
           },
         },
       });
+      expect(mapProduct).toHaveBeenCalledWith(mockProduct);
       expect(deleteCache).toHaveBeenCalled();
-      expect(result).toEqual(mockProduct);
+      expect(result).toEqual(mockMappedProduct);
     });
 
     it('cleans up image when image metadata validation fails', async () => {
@@ -157,7 +175,7 @@ describe('products.service', () => {
         } as ProductWithImage,
       ];
 
-      const mockMappedProducts = [
+      const mockMappedProducts: Product[] = [
         {
           id: '123e4567-e89b-12d3-a456-426614174000',
           title: 'Test Album',
@@ -174,7 +192,7 @@ describe('products.service', () => {
       ];
 
       vi.mocked(getAllProductsDb).mockResolvedValue(mockProducts);
-      vi.mocked(mapProducts).mockReturnValue(mockMappedProducts as any);
+      vi.mocked(mapProducts).mockReturnValue(mockMappedProducts);
 
       const result = await getAllProducts();
 

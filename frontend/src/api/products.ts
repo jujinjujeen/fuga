@@ -25,6 +25,27 @@ export async function getProducts(): Promise<ProductsResponse | ErrorResponse> {
 }
 
 /**
+ * Gets a single product by ID
+ * @param productId - Product UUID
+ * @returns Product or error response
+ */
+export async function getProduct(
+  productId: string
+): Promise<Product | ErrorResponse> {
+  const response = await fetch(`${BASE_URL}/api/products/${productId}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to fetch product');
+  }
+
+  return response.json();
+}
+
+/**
  * Creates a new product
  * @param product - Product data including title, artist, and imageKey
  * @returns Created product or error response
