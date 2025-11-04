@@ -2,8 +2,9 @@ import { Router } from 'express';
 import { createProductController } from './createProduct.controller';
 import { listProducts } from './listProducts.controller';
 import { getProduct } from './getProduct.controller';
+import { updateProductController } from './updateProduct.controller';
 import { validateRequest } from '../../middleware/validateRequest';
-import { createProductSchema } from './products.validation';
+import { createProductSchema, updateProductSchema } from './products.validation';
 
 const router = Router();
 
@@ -27,6 +28,16 @@ router.post(
   '/products',
   validateRequest(createProductSchema, 'body'),
   createProductController
+);
+
+/**
+ * POST /api/products/:productId
+ * Update an existing product
+ */
+router.post(
+  '/products/:productId',
+  validateRequest(updateProductSchema, 'body'),
+  updateProductController
 );
 
 export default router;

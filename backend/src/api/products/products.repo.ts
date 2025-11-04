@@ -44,3 +44,32 @@ export const createProduct = async (
     },
   });
 };
+
+/**
+ * Updates an existing product
+ * @param id - Product UUID
+ * @param data - Product update data
+ * @returns Updated product with image relation or null if not found
+ */
+export const updateProduct = async (
+  id: string,
+  data: Prisma.ProductUpdateInput
+): Promise<ProductWithImage | null> => {
+  try {
+    return await prisma.product.update({
+      where: { id },
+      data,
+      include: {
+        image: true,
+      },
+    });
+  } catch (error) {
+    // Prisma throws P2025 when record to update doesn't exist
+    if (error && typeof error === 'object' && 'code' in error) {
+      if (error.code === 'P2025') {
+        return null;
+      }
+    }
+    throw error;
+  }
+};

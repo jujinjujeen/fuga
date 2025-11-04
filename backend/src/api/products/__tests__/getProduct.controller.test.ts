@@ -14,10 +14,12 @@ describe('getProduct.controller', () => {
   let mockResponse: Partial<Response>;
   let mockJson: ReturnType<typeof vi.fn>;
   let mockStatus: ReturnType<typeof vi.fn>;
+  let mockSetHeader: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     mockJson = vi.fn();
     mockStatus = vi.fn().mockReturnValue({ json: mockJson });
+    mockSetHeader = vi.fn();
 
     mockRequest = {
       params: {},
@@ -25,6 +27,7 @@ describe('getProduct.controller', () => {
     mockResponse = {
       status: mockStatus,
       json: mockJson,
+      setHeader: mockSetHeader,
     };
 
     vi.clearAllMocks();

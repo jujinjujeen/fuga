@@ -20,6 +20,7 @@ export const HTTP_STATUS = {
   NOT_FOUND: 404,
   INTERNAL_SERVER_ERROR: 500,
   BAD_REQUEST: 400,
+  CONFLICT: 409,
 };
 
 export const HTTP_LABEL = {
@@ -27,4 +28,5 @@ export const HTTP_LABEL = {
   NOT_FOUND: 'Not Found',
   INTERNAL_SERVER_ERROR: 'Internal Server Error',
   BAD_REQUEST: 'Bad Request',
+  CONFLICT: 'Conflict',
 };

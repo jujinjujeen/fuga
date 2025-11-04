@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { getProductById } from './products.service';
 import { HTTP_STATUS, HTTP_LABEL } from '@f/be/constants';
+import { generateETag } from '@f/be/utils/etag';
 
 /**
  * GET /products/:productId - Get a single product by ID
@@ -32,6 +33,10 @@ export const getProduct = async (
       return;
     }
 
+    // Generate ETag from updatedAt timestamp
+    const etag = generateETag(new Date(product.updatedAt));
+
+    res.setHeader('ETag', etag);
     res.status(HTTP_STATUS.OK).json(product);
   } catch (error) {
     console.error('Get product error:', error);

@@ -1,8 +1,10 @@
+import { Prisma } from '@prisma/client';
 import { imageService } from '@f/be/services/image.service';
 import {
   createProduct as createProductDb,
   getAllProducts as getAllProductsDb,
   getProductById as getProductByIdDb,
+  updateProduct as updateProductDb,
 } from './products.repo';
 import { deleteCache, getKeyHelper } from '@f/be/lib/redisClient';
 import {
@@ -89,4 +91,83 @@ export const getProductById = async (id: string) => {
   }
 
   return mapProduct(product);
+};
+
+/**
+ * Updates an existing product
+ * Optionally updates the image if new imageKey is provided
+ *
+ * @param id - Product UUID
+ * @param title - Updated title
+ * @param artist - Updated artist
+ * @param imageKey - Optional new image key
+ * @returns Updated product DTO or null if not found
+ */
+export const updateProduct = async (
+  id: string,
+  title: string,
+  artist: string,
+  imageKey?: string
+) => {
+  let oldImageKey: string | null = null;
+
+  try {
+    // Build update data
+    const updateData: Prisma.ProductUpdateInput = {
+      title,
+      artist,
+    };
+
+    // If new image provided, process it and track old image for cleanup
+    if (imageKey) {
+      // Get current product to retrieve old image key
+      const currentProduct = await getProductByIdDb(id);
+      if (currentProduct?.image) {
+        oldImageKey = currentProduct.image.storageKey;
+      }
+
+      const imageMetadata = await imageService.getImageMetadata(imageKey);
+      await moveObjectToPermanent(imageKey);
+
+      updateData.image = {
+        update: {
+          storageKey: imageKey,
+          width: imageMetadata.width,
+          height: imageMetadata.height,
+          format: imageMetadata.format,
+        },
+      };
+    }
+
+    const product = await updateProductDb(id, updateData);
+
+    if (!product) {
+      return null;
+    }
+
+    // Remove old image from storage after successful update
+    if (oldImageKey) {
+      removeObject(oldImageKey).catch((err) => {
+        console.error(`Failed to remove old image ${oldImageKey}:`, err);
+      });
+    }
+
+    // Invalidate products cache
+    deleteCache(getKeyHelper('/products'));
+    deleteCache(getKeyHelper(`/products/${id}`));
+
+    return mapProduct(product);
+  } catch (error) {
+    if (error instanceof Error) {
+      // Cleanup: remove the uploaded image if update fails due to image issues
+      if (
+        imageKey &&
+        (error.message.includes('Unsupported image format') ||
+          error.message.includes('Invalid image metadata'))
+      ) {
+        removeObject(imageKey);
+      }
+    }
+    throw error;
+  }
 };
