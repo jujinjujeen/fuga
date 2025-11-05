@@ -197,6 +197,7 @@ components:
       required: [url, width, height, format]
       properties:
         url: { type: string, format: uri }
+        key: { type: string }
         width: { type: integer }
         height: { type: integer }
         format: { type: string, enum: [jpeg, png, webp] }

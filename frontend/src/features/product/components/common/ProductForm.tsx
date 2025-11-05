@@ -6,16 +6,18 @@ import { ImageUploadField } from './ImageUploadField';
 
 type ProductFormProps = {
   form: UseFormReturn<ProductFormValues>;
-  onSubmit: (values: ProductFormValues) => Promise<void> | void;
+  initialPreviewUrl?: string;
   mode: 'create' | 'edit';
   submitting?: boolean;
+  onSubmit: (values: ProductFormValues) => Promise<void> | void;
 };
 
 export const ProductForm = ({
   form,
-  onSubmit,
+  initialPreviewUrl,
   mode,
   submitting,
+  onSubmit,
 }: ProductFormProps) => {
   const {
     handleSubmit,
@@ -31,7 +33,10 @@ export const ProductForm = ({
           className="flex flex-col flex-1 space-y-6"
         >
           <div className="flex-col flex-1 space-y-6">
-            <ImageUploadField form={form} />
+            <ImageUploadField
+              form={form}
+              initialPreviewUrl={initialPreviewUrl}
+            />
 
             <ProductField
               id="title"

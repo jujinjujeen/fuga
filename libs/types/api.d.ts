@@ -141,7 +141,6 @@ export interface paths {
                 /** @description The product */
                 200: {
                     headers: {
-                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -174,7 +173,6 @@ export interface paths {
                 /** @description Product updated successfully */
                 200: {
                     headers: {
-                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -182,7 +180,6 @@ export interface paths {
                     };
                 };
                 404: components["responses"]["NotFound"];
-                409: components["responses"]["Conflict"];
             };
         };
         delete?: never;
@@ -279,6 +276,7 @@ export interface components {
         ImageRef: {
             /** Format: uri */
             url: string;
+            key?: string;
             width: number;
             height: number;
             /** @enum {string} */
@@ -317,15 +315,6 @@ export interface components {
     responses: {
         /** @description Resource not found */
         NotFound: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["Error"];
-            };
-        };
-        /** @description Version conflict (ETag mismatch) */
-        Conflict: {
             headers: {
                 [name: string]: unknown;
             };

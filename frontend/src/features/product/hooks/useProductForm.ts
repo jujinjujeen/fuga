@@ -23,7 +23,7 @@ export function useProductForm(initial?: Product) {
       ? {
           title: initial.title,
           artist: initial.artist,
-          imageKey: initial.image?.url,
+          imageKey: initial.image?.key || '',
         }
       : {
           title: '',

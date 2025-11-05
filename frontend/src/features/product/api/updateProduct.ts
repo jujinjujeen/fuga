@@ -1,8 +1,5 @@
 import { BASE_URL } from '@f/fe/constants';
-import type {
-  Product,
-  ProductCreate,
-} from '@f/types/api-schemas';
+import type { Product, ProductCreate } from '@f/types/api-schemas';
 
 /**
  * Updates an existing product

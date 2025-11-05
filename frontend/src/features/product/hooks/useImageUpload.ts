@@ -11,7 +11,7 @@ export function useImageUpload(initialImageUrl?: string) {
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
   const [storageKey, setStorageKey] = useState<string | null>(
-    initialImageUrl?.split('/').pop() || null
+    initialImageUrl?.split('/').slice(-2).join('/') || null
   );
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     initialImageUrl || null

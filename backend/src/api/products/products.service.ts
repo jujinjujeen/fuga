@@ -126,17 +126,19 @@ export const updateProduct = async (
         oldImageKey = currentProduct.image.storageKey;
       }
 
-      const imageMetadata = await imageService.getImageMetadata(imageKey);
-      await moveObjectToPermanent(imageKey);
+      if (imageKey !== oldImageKey) {
+        const imageMetadata = await imageService.getImageMetadata(imageKey);
+        await moveObjectToPermanent(imageKey);
 
-      updateData.image = {
-        update: {
-          storageKey: imageKey,
-          width: imageMetadata.width,
-          height: imageMetadata.height,
-          format: imageMetadata.format,
-        },
-      };
+        updateData.image = {
+          update: {
+            storageKey: imageKey,
+            width: imageMetadata.width,
+            height: imageMetadata.height,
+            format: imageMetadata.format,
+          },
+        };
+      }
     }
 
     const product = await updateProductDb(id, updateData);
@@ -146,8 +148,8 @@ export const updateProduct = async (
     }
 
     // Remove old image from storage after successful update
-    if (oldImageKey) {
-      removeObject(oldImageKey).catch((err) => {
+    if (imageKey && oldImageKey && imageKey !== oldImageKey) {
+      removeObject(oldImageKey, 'perm').catch((err) => {
         console.error(`Failed to remove old image ${oldImageKey}:`, err);
       });
     }

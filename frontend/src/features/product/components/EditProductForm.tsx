@@ -32,6 +32,7 @@ export const EditProductForm = ({
   return (
     <ProductForm
       form={form}
+      initialPreviewUrl={product.image?.url}
       onSubmit={onSubmit}
       mode="edit"
       submitting={submitting}

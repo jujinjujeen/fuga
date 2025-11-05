@@ -7,16 +7,18 @@ import { ImageIcon, Upload } from 'lucide-react';
 
 type Props = {
   form: UseFormReturn<ProductFormValues>;
+  initialPreviewUrl?: string;
   name?: keyof ProductFormValues; // default imageKey
   label?: string;
 };
 
 export const ImageUploadField: React.FC<Props> = ({
   form,
+  initialPreviewUrl,
   name = 'imageKey',
   label = 'Product Image',
 }) => {
-  const { status, error, previewUrl, upload } = useImageUpload(form.getValues(name) || '');
+  const { status, error, previewUrl, upload } = useImageUpload();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,10 +26,11 @@ export const ImageUploadField: React.FC<Props> = ({
     if (!file) return;
     const key = await upload(file);
     if (key) {
-      debugger;
       form.setValue(name, key, { shouldDirty: true, shouldValidate: true });
     }
   };
+
+  const previewSource = previewUrl || initialPreviewUrl;
 
   return (
     <div className="space-y-2">
@@ -37,10 +40,10 @@ export const ImageUploadField: React.FC<Props> = ({
       </label>
 
       <div className="relative">
-        {previewUrl ? (
+        {previewSource ? (
           <div className="relative w-full h-64 rounded-lg overflow-hidden bg-gray-100 group">
             <img
-              src={previewUrl}
+              src={previewSource}
               alt="Product preview"
               className="m-auto h-full object-cover"
             />
