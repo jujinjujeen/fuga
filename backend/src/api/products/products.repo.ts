@@ -2,8 +2,20 @@ import { Prisma } from '@prisma/client';
 import prisma from '@f/prismaInstance';
 import { ProductWithImage } from '@f/be/types/shared';
 
-export const getAllProducts = async (): Promise<ProductWithImage[]> => {
+export const getAllProducts = async (
+  search?: string
+): Promise<ProductWithImage[]> => {
+  const where: Prisma.ProductWhereInput = search
+    ? {
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { artist: { contains: search, mode: 'insensitive' } },
+        ],
+      }
+    : {};
+
   return prisma.product.findMany({
+    where,
     include: {
       image: true,
     },

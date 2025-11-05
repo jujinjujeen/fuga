@@ -100,14 +100,26 @@ describe('products.service', () => {
   });
 
   describe('getAllProducts', () => {
-    it('retrieves and maps all products', async () => {
+    it('retrieves and maps all products without search', async () => {
       const products = [mockProduct(), mockProduct({ id: '456-uuid' })];
       vi.mocked(productsRepo.getAllProducts).mockResolvedValue(products);
       vi.mocked(mapProducts).mockReturnValue(products as any);
 
       const result = await productsService.getAllProducts();
 
-      expect(productsRepo.getAllProducts).toHaveBeenCalled();
+      expect(productsRepo.getAllProducts).toHaveBeenCalledWith(undefined);
+      expect(mapProducts).toHaveBeenCalledWith(products);
+      expect(result).toEqual(products);
+    });
+
+    it('retrieves and maps products with search query', async () => {
+      const products = [mockProduct({ title: 'Queen Album' })];
+      vi.mocked(productsRepo.getAllProducts).mockResolvedValue(products);
+      vi.mocked(mapProducts).mockReturnValue(products as any);
+
+      const result = await productsService.getAllProducts('queen');
+
+      expect(productsRepo.getAllProducts).toHaveBeenCalledWith('queen');
       expect(mapProducts).toHaveBeenCalledWith(products);
       expect(result).toEqual(products);
     });
