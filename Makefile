@@ -20,6 +20,10 @@ down: ## Stop all services
 generate-types: ## Generate TypeScript types from OpenAPI spec in backend/docs
 	./generate-types.sh
 
+init-env: ## Initialize .env files for backend and frontend from examples
+	cp .env.example .env
+	cp /backend/.env.example /backend/.env
+
 restart: down up ## Restart all services
 
 logs: ## Tail logs for all services
