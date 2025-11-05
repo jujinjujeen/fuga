@@ -8,19 +8,16 @@ import type {
  * Updates an existing product
  * @param productId - Product UUID
  * @param product - Updated product data
- * @param etag - ETag from GET request for optimistic concurrency control
  * @returns Updated product or error response
  */
 export async function updateProduct(
   productId: string,
-  product: ProductCreate,
-  etag: string
+  product: ProductCreate
 ): Promise<Product> {
   const response = await fetch(`${BASE_URL}/api/products/${productId}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'If-Match': etag,
     },
     body: JSON.stringify(product),
   });

@@ -4,14 +4,10 @@ import { createProduct } from '../api/createProduct';
 import { ProductForm } from './common/ProductForm';
 
 interface CreateProductFormProps {
-  onSuccess?: () => void;
   onClose?: () => void;
 }
 
-export const CreateProductForm = ({
-  onSuccess,
-  onClose,
-}: CreateProductFormProps) => {
+export const CreateProductForm = ({ onClose }: CreateProductFormProps) => {
   const form = useProductForm();
   const [submitting, setSubmitting] = useState(false);
 
@@ -22,8 +18,7 @@ export const CreateProductForm = ({
         ...values,
       });
       form.reset();
-      onSuccess?.();
-      // Don't close on create - allow creating multiple products
+      onClose?.();
     } catch (error) {
       console.error('Failed to create product:', error);
       // Error handling can be improved with toast notifications

@@ -6,15 +6,11 @@ import type { Product } from '@f/types/api-schemas';
 
 interface EditProductFormProps {
   product: Product;
-  etag: string;
-  onSuccess?: () => void;
   onClose?: () => void;
 }
 
 export const EditProductForm = ({
   product,
-  etag,
-  onSuccess,
   onClose,
 }: EditProductFormProps) => {
   const form = useProductForm(product);
@@ -23,8 +19,7 @@ export const EditProductForm = ({
   const onSubmit = async (values: any) => {
     setSubmitting(true);
     try {
-      await updateProduct(product.id, values, etag);
-      onSuccess?.();
+      await updateProduct(product.id, values);
       onClose?.();
     } catch (error) {
       console.error('Failed to update product:', error);

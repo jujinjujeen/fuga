@@ -8,7 +8,6 @@ import type { Product } from '@f/types/api-schemas';
 type ProductSidebarProps = Omit<SidebarProps, 'children'> & {
   mode: 'create' | 'edit';
   product?: Product;
-  etag?: string;
   onSuccess?: () => void;
 };
 
@@ -16,8 +15,6 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
   isOpen,
   mode,
   product,
-  etag,
-  onSuccess,
   onClose,
 }) => {
   return (
@@ -43,14 +40,9 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
         </div>
 
         {mode === 'create' ? (
-          <CreateProductForm onSuccess={onSuccess} onClose={onClose} />
-        ) : product && etag ? (
-          <EditProductForm
-            product={product}
-            etag={etag}
-            onSuccess={onSuccess}
-            onClose={onClose}
-          />
+          <CreateProductForm onClose={onClose} />
+        ) : product ? (
+          <EditProductForm product={product} onClose={onClose} />
         ) : null}
       </div>
     </Sidebar>

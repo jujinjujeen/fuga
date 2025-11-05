@@ -71,19 +71,16 @@ export async function createProduct(
  * Updates an existing product
  * @param productId - Product UUID
  * @param product - Updated product data
- * @param etag - ETag from GET request for optimistic concurrency control
  * @returns Updated product or error response
  */
 export async function updateProduct(
   productId: string,
-  product: ProductCreate,
-  etag: string
+  product: ProductCreate
 ): Promise<Product | ErrorResponse> {
   const response = await fetch(`${BASE_URL}/api/products/${productId}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'If-Match': etag,
     },
     body: JSON.stringify(product),
   });
@@ -94,31 +91,4 @@ export async function updateProduct(
   }
 
   return response.json();
-}
-
-/**
- * Fetches a product with ETag for editing
- * @param productId - Product UUID
- * @returns Product data and ETag header
- */
-export async function getProductForEdit(
-  productId: string
-): Promise<{ product: Product; etag: string }> {
-  const response = await fetch(`${BASE_URL}/api/products/${productId}`, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to fetch product');
-  }
-
-  const etag = response.headers.get('ETag');
-  if (!etag) {
-    throw new Error('ETag header missing from response');
-  }
-
-  const product = await response.json();
-  return { product, etag };
 }

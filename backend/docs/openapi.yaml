@@ -78,9 +78,6 @@ paths:
       responses:
         '200':
           description: The product
-          headers:
-            ETag:
-              schema: { type: string }
           content:
             application/json:
               schema:
@@ -100,17 +97,12 @@ paths:
       responses:
         '200':
           description: Product updated successfully
-          headers:
-            ETag:
-              schema: { type: string }
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
         '404':
           $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
 
   /presign:
     post:
@@ -147,11 +139,6 @@ components:
   responses:
     NotFound:
       description: Resource not found
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/Error' }
-    Conflict:
-      description: Version conflict (ETag mismatch)
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
