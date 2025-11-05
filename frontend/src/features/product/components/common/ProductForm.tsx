@@ -3,6 +3,7 @@ import type { ProductFormValues } from '../../types';
 import { Button } from '@radix-ui/themes';
 import { ProductField } from './ProductField';
 import { ImageUploadField } from './ImageUploadField';
+import { DeleteProductDialog } from './DeleteProductDialog';
 
 type ProductFormProps = {
   form: UseFormReturn<ProductFormValues>;
@@ -10,6 +11,8 @@ type ProductFormProps = {
   mode: 'create' | 'edit';
   submitting?: boolean;
   onSubmit: (values: ProductFormValues) => Promise<void> | void;
+  onDelete?: () => void;
+  isDeleting?: boolean;
 };
 
 export const ProductForm = ({
@@ -18,11 +21,16 @@ export const ProductForm = ({
   mode,
   submitting,
   onSubmit,
+  onDelete,
+  isDeleting,
 }: ProductFormProps) => {
   const {
     handleSubmit,
     formState: { isValid },
+    watch,
   } = form;
+
+  const title = watch('title');
 
   return (
     <div className="flex-1">
@@ -53,10 +61,12 @@ export const ProductForm = ({
           </div>
 
           <div className="flex gap-3 pt-4 border-t border-gray-200">
-            {mode === 'edit' && (
-              <Button variant="outline" type="button" onClick={() => {}}>
-                Delete
-              </Button>
+            {mode === 'edit' && onDelete && (
+              <DeleteProductDialog
+                productTitle={title || 'this product'}
+                isDeleting={isDeleting || false}
+                onConfirm={onDelete}
+              />
             )}
             <Button
               type="submit"
