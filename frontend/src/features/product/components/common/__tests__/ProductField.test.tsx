@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { useForm } from 'react-hook-form';
 import { ProductField } from '../ProductField';
 import type { ProductFormValues } from '../../../types';
@@ -29,7 +28,12 @@ const TestWrapper = ({
 
   return (
     <Theme>
-      <ProductField id={id} label={label} placeholder={placeholder} form={form} />
+      <ProductField
+        id={id}
+        label={label}
+        placeholder={placeholder}
+        form={form}
+      />
     </Theme>
   );
 };

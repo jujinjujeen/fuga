@@ -11,11 +11,7 @@ import * as useImageUploadModule from '../../../hooks/useImageUpload';
 vi.mock('../../../hooks/useImageUpload');
 
 // Wrapper component
-const TestWrapper = ({
-  initialPreviewUrl,
-}: {
-  initialPreviewUrl?: string;
-}) => {
+const TestWrapper = ({ initialPreviewUrl }: { initialPreviewUrl?: string }) => {
   const form = useForm<ProductFormValues>({
     defaultValues: {
       title: '',
@@ -188,7 +184,9 @@ describe('ImageUploadField', () => {
 
     render(<TestWrapper />);
 
-    const uploadButton = screen.getByText('Click to upload image').closest('button');
+    const uploadButton = screen
+      .getByText('Click to upload image')
+      .closest('button');
     expect(uploadButton).toBeDisabled();
   });
 
