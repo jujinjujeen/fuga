@@ -28,7 +28,12 @@ export const createApp = () => {
   // CORS
   // Cors origin is set in production via environment variable
   // or defaults to docker run fe service in development
-  app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:5445' }));
+  app.use(
+    cors({
+      origin: process.env.CORS_ORIGIN || 'http://localhost:5445',
+      exposedHeaders: ['ETag'], // Expose ETag header for optimistic concurrency control
+    })
+  );
 
   // Body parsers
   app.use(express.json());

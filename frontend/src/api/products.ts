@@ -4,7 +4,7 @@ import type {
   ErrorResponse,
   ProductsResponse,
 } from '@f/types/api-schemas';
-const BASE_URL = import.meta.env.VITE_BASE_URL || '';
+import { BASE_URL } from '@f/fe/constants';
 
 /**
  * Fetches all products
@@ -65,4 +65,60 @@ export async function createProduct(
   }
 
   return response.json();
+}
+
+/**
+ * Updates an existing product
+ * @param productId - Product UUID
+ * @param product - Updated product data
+ * @param etag - ETag from GET request for optimistic concurrency control
+ * @returns Updated product or error response
+ */
+export async function updateProduct(
+  productId: string,
+  product: ProductCreate,
+  etag: string
+): Promise<Product | ErrorResponse> {
+  const response = await fetch(`${BASE_URL}/api/products/${productId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'If-Match': etag,
+    },
+    body: JSON.stringify(product),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to update product');
+  }
+
+  return response.json();
+}
+
+/**
+ * Fetches a product with ETag for editing
+ * @param productId - Product UUID
+ * @returns Product data and ETag header
+ */
+export async function getProductForEdit(
+  productId: string
+): Promise<{ product: Product; etag: string }> {
+  const response = await fetch(`${BASE_URL}/api/products/${productId}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to fetch product');
+  }
+
+  const etag = response.headers.get('ETag');
+  if (!etag) {
+    throw new Error('ETag header missing from response');
+  }
+
+  const product = await response.json();
+  return { product, etag };
 }

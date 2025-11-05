@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { useEffect } from 'react';
 
-interface SidebarProps {
+export interface SidebarProps {
   isOpen: boolean;
 
   onClose: () => void;
