@@ -11,6 +11,7 @@ export const mapProduct = (product: ProductWithImage): Product => {
     updatedAt: product.updatedAt.toISOString(),
     image: {
       url: `${process.env.S3_PUBLIC_ENDPOINT}/${PERM_BUCKET}/${product.image?.storageKey}`,
+      key: product.image?.storageKey || '',
       width: product.image?.width || 0,
       height: product.image?.height || 0,
       format: product.image?.format || 'jpeg',

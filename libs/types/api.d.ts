@@ -141,7 +141,6 @@ export interface paths {
                 /** @description The product */
                 200: {
                     headers: {
-                        ETag?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -152,8 +151,62 @@ export interface paths {
             };
         };
         put?: never;
-        post?: never;
-        delete?: never;
+        /**
+         * Update product
+         * @description Updates an existing product
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    productId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProductCreate"];
+                };
+            };
+            responses: {
+                /** @description Product updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Product"];
+                    };
+                };
+                404: components["responses"]["NotFound"];
+            };
+        };
+        /**
+         * Delete product
+         * @description Deletes an existing product and its associated image
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    productId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Product deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                404: components["responses"]["NotFound"];
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -247,6 +300,7 @@ export interface components {
         ImageRef: {
             /** Format: uri */
             url: string;
+            key?: string;
             width: number;
             height: number;
             /** @enum {string} */
@@ -285,15 +339,6 @@ export interface components {
     responses: {
         /** @description Resource not found */
         NotFound: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["Error"];
-            };
-        };
-        /** @description Version conflict (ETag mismatch) */
-        Conflict: {
             headers: {
                 [name: string]: unknown;
             };

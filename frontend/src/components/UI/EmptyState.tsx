@@ -9,7 +9,7 @@ export const EmptyState = ({ message, icon = '📭' }: EmptyStateProps) => {
       <div className="text-4xl mb-4" aria-hidden="true">
         {icon}
       </div>
-      <p className="text-lg text-gray-600 dark:text-gray-400">{message}</p>
+      <p className="text-lg text-gray-600 ">{message}</p>
     </div>
   );
 };

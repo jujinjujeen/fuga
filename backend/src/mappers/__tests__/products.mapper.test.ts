@@ -34,6 +34,7 @@ describe('products.mapper', () => {
         updatedAt: '2024-01-02T00:00:00.000Z',
         image: {
           url: `${S3_PUBLIC_ENDPOINT}/perm/uuid/test-image.jpg`,
+          key: 'uuid/test-image.jpg',
           width: 1200,
           height: 1200,
           format: 'jpeg',
@@ -52,6 +53,7 @@ describe('products.mapper', () => {
 
       expect(result.image).toEqual({
         url: `${S3_PUBLIC_ENDPOINT}/perm/undefined`,
+        key: '',
         width: 0,
         height: 0,
         format: 'jpeg',

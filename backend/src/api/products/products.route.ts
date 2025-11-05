@@ -1,8 +1,11 @@
 import { Router } from 'express';
 import { createProductController } from './createProduct.controller';
 import { listProducts } from './listProducts.controller';
+import { getProduct } from './getProduct.controller';
+import { updateProductController } from './updateProduct.controller';
+import { deleteProductController } from './deleteProduct.controller';
 import { validateRequest } from '../../middleware/validateRequest';
-import { createProductSchema } from './products.validation';
+import { createProductSchema, updateProductSchema } from './products.validation';
 
 const router = Router();
 
@@ -13,6 +16,12 @@ const router = Router();
 router.get('/products', listProducts);
 
 /**
+ * GET /api/products/:productId
+ * Get a single product by ID
+ */
+router.get('/products/:productId', getProduct);
+
+/**
  * POST /api/products
  * Create a new product
  */
@@ -21,5 +30,21 @@ router.post(
   validateRequest(createProductSchema, 'body'),
   createProductController
 );
+
+/**
+ * POST /api/products/:productId
+ * Update an existing product
+ */
+router.post(
+  '/products/:productId',
+  validateRequest(updateProductSchema, 'body'),
+  updateProductController
+);
+
+/**
+ * DELETE /api/products/:productId
+ * Delete a product
+ */
+router.delete('/products/:productId', deleteProductController);
 
 export default router;

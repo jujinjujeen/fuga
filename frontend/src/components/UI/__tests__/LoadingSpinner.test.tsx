@@ -6,24 +6,20 @@ describe('LoadingSpinner', () => {
   it('renders with default message', () => {
     render(<LoadingSpinner />);
 
-    const message = screen.getByText('Loading...');
-    const spinner = screen.getByText('🏁');
-
-    expect(document.body.contains(message)).toBe(true);
-    expect(document.body.contains(spinner)).toBe(true);
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    expect(screen.getByText('🎶')).toBeInTheDocument();
   });
 
   it('renders with custom message', () => {
-    render(<LoadingSpinner message="Loading races..." />);
+    render(<LoadingSpinner message="Loading products..." />);
 
-    const message = screen.getByText('Loading races...');
-    expect(document.body.contains(message)).toBe(true);
+    expect(screen.getByText('Loading products...')).toBeInTheDocument();
   });
 
   it('has spinning animation class', () => {
     render(<LoadingSpinner />);
 
-    const spinner = screen.getByText('🏁');
+    const spinner = screen.getByText('🎶');
     expect(spinner.classList.contains('animate-spin')).toBe(true);
   });
 });

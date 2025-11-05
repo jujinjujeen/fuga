@@ -65,6 +65,10 @@ export default defineConfig({
         find: /^@f\/types\/(.*)$/,
         replacement: path.resolve(__dirname, '../libs/types/$1'),
       },
+      {
+        find: /^@f\/fe\/(.*)$/,
+        replacement: path.resolve(__dirname, './src/$1'),
+      },
     ],
   },
 

@@ -1,32 +1,26 @@
-import { useState } from 'react';
-import { ControlBar } from '../components/ControlBar';
-import { Sidebar } from '../components/Sidebar/Sidebar';
-import { ProductList } from '../components/ProductList';
+import { Outlet, useNavigate } from 'react-router';
+import { ControlBar, ProductList } from '../features/products/components';
 import { PageLayout } from '../layouts/PageLayout';
+import type { Product } from '@f/types/api-schemas';
 
 export const HomePage = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const navigate = useNavigate();
 
-  const handleProductCreated = () => {
-    setRefreshTrigger((prev) => prev + 1);
+  const handleAddProduct = () => {
+    navigate('create');
+  };
+
+  const handleProductClick = (product: Product) => {
+    navigate(`edit/${product.id}`);
   };
 
   return (
     <PageLayout>
-      <ControlBar
-        onAdd={() => {
-          setIsOpen(true);
-        }}
-      />
-      <ProductList refreshTrigger={refreshTrigger} />
-      <Sidebar
-        isOpen={isOpen}
-        onClose={() => {
-          setIsOpen(false);
-        }}
-        onProductCreated={handleProductCreated}
-      />
+      <ControlBar onAdd={handleAddProduct} />
+      <ProductList onProductClick={handleProductClick} />
+
+      {/* Child routes (modals) render here as overlay */}
+      <Outlet />
     </PageLayout>
   );
 };

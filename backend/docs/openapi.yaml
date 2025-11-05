@@ -15,12 +15,12 @@ paths:
       tags:
         - Health
       responses:
-        "200":
+        '200':
           description: API is healthy
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HealthResponse"
+                $ref: '#/components/schemas/HealthResponse'
 
   /products:
     get:
@@ -39,7 +39,7 @@ paths:
           schema: { type: string }
           description: Full-text search query.
       responses:
-        "200":
+        '200':
           description: A list of available products
           headers:
             X-Next-Cursor:
@@ -48,7 +48,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProductsResponse"
+                $ref: '#/components/schemas/ProductsResponse'
 
     post:
       summary: Create a new product
@@ -58,14 +58,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ProductCreate"
+              $ref: '#/components/schemas/ProductCreate'
       responses:
-        "201":
+        '201':
           description: Product created successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Product"
+                $ref: '#/components/schemas/Product'
 
   /products/{productId}:
     parameters:
@@ -76,17 +76,42 @@ paths:
     get:
       summary: Get product
       responses:
-        "200":
+        '200':
           description: The product
-          headers:
-            ETag:
-              schema: { type: string }
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Product"
-        "404":
-          $ref: "#/components/responses/NotFound"
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      summary: Update product
+      description: Updates an existing product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreate'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete product
+      description: Deletes an existing product and its associated image
+      responses:
+        '204':
+          description: Product deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /presign:
     post:
@@ -97,21 +122,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PresignRequest"
+              $ref: '#/components/schemas/PresignRequest'
       responses:
-        "200":
+        '200':
           description: Presigned URL and storage key
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PresignResponse"
-        "400":
+                $ref: '#/components/schemas/PresignResponse'
+        '400':
           description: Invalid request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-
+                $ref: '#/components/schemas/Error'
 
 components:
   parameters:
@@ -126,12 +150,7 @@ components:
       description: Resource not found
       content:
         application/json:
-          schema: { $ref: "#/components/schemas/Error" }
-    Conflict:
-      description: Version conflict (ETag mismatch)
-      content:
-        application/json:
-          schema: { $ref: "#/components/schemas/Error" }
+          schema: { $ref: '#/components/schemas/Error' }
 
   schemas:
     HealthResponse:
@@ -156,7 +175,7 @@ components:
         title: { type: string, minLength: 1, maxLength: 200 }
         artist: { type: string, minLength: 1, maxLength: 200 }
         image:
-          $ref: "#/components/schemas/ImageRef"
+          $ref: '#/components/schemas/ImageRef'
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
 
@@ -167,7 +186,7 @@ components:
         products:
           type: array
           items:
-            $ref: "#/components/schemas/Product"
+            $ref: '#/components/schemas/Product'
 
     ProductCreate:
       type: object
@@ -178,7 +197,7 @@ components:
         imageKey:
           {
             type: string,
-            description: "Object storage key for a previously uploaded original",
+            description: 'Object storage key for a previously uploaded original',
             nullable: true,
           }
 
@@ -187,6 +206,7 @@ components:
       required: [url, width, height, format]
       properties:
         url: { type: string, format: uri }
+        key: { type: string }
         width: { type: integer }
         height: { type: integer }
         format: { type: string, enum: [jpeg, png, webp] }
@@ -201,7 +221,7 @@ components:
         fileType:
           type: string
           description: MIME type of the image (e.g., image/png)
-        fileSize: 
+        fileSize:
           type: integer
           description: Size of the image in bytes
 
@@ -229,10 +249,10 @@ components:
       properties:
         title:
           type: string
-          example: "An error occurred"
+          example: 'An error occurred'
         message:
           type: string
-          example: "Detailed error message"
+          example: 'Detailed error message'
         code:
           type: integer
           example: 500

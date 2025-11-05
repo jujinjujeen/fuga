@@ -23,7 +23,8 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "paths": {
-      "@f/types/*": ["../libs/types/*"]
+      "@f/types/*": ["../libs/types/*"],
+      "@f/fe/*": ["./src/*"]
     }
   },
   "include": ["src"],
