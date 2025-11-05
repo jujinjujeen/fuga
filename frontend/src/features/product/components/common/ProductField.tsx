@@ -1,9 +1,9 @@
 import { TextField } from '@radix-ui/themes';
 import type { UseFormReturn } from 'react-hook-form';
-import type { ProductFormValues } from '../types';
+import type { ProductFormValues } from '../../types';
 
 interface ProductFieldProps {
-  id: keyof ProductFormValues;
+  id: 'title' | 'artist';
   placeholder?: string;
   label: string;
   form: UseFormReturn<ProductFormValues>;

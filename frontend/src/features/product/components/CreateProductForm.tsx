@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useProductForm } from '../hooks/useProductForm';
 import { createProduct } from '../api/createProduct';
 import { ProductForm } from './common/ProductForm';
+import { productQueryKeys } from '@f/fe/features/products/queryKeys';
 
 interface CreateProductFormProps {
   onClose?: () => void;
@@ -10,6 +12,7 @@ interface CreateProductFormProps {
 export const CreateProductForm = ({ onClose }: CreateProductFormProps) => {
   const form = useProductForm();
   const [submitting, setSubmitting] = useState(false);
+  const queryClient = useQueryClient();
 
   const onSubmit = async (values: any) => {
     setSubmitting(true);
@@ -17,6 +20,7 @@ export const CreateProductForm = ({ onClose }: CreateProductFormProps) => {
       await createProduct({
         ...values,
       });
+      queryClient.invalidateQueries({ queryKey: productQueryKeys.all });
       form.reset();
       onClose?.();
     } catch (error) {

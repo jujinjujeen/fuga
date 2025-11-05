@@ -69,11 +69,13 @@ export const createProduct = async (
 
 /**
  * Gets all products with their images mapped to DTOs
+ * Optionally filters by search query
  *
+ * @param search - Optional search query to filter by title or artist
  * @returns
  */
-export const getAllProducts = async () => {
-  const products = await getAllProductsDb();
+export const getAllProducts = async (search?: string) => {
+  const products = await getAllProductsDb(search);
 
   return mapProducts(products);
 };

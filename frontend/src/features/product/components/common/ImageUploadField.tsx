@@ -49,6 +49,7 @@ export const ImageUploadField: React.FC<Props> = ({
             />
             <div className="absolute inset-0 opacity-0 bg-black/20 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <Button
+                type='button'
                 variant="classic"
                 onClick={() => fileInputRef.current?.click()}
               >

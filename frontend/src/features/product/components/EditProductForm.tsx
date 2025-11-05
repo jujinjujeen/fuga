@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useProductForm } from '../hooks/useProductForm';
 import { updateProduct } from '../api/updateProduct';
 import { deleteProduct } from '../api/deleteProduct';
 import { ProductForm } from './common/ProductForm';
 import type { Product } from '@f/types/api-schemas';
-// import { useQueryClient } from '@tanstack/react-query';
+import { productQueryKeys } from '@f/fe/features/products/queryKeys';
 
 interface EditProductFormProps {
   product: Product;
@@ -18,13 +19,13 @@ export const EditProductForm = ({
   const form = useProductForm(product);
   const [submitting, setSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const onSubmit = async (values: any) => {
     setSubmitting(true);
     try {
       await updateProduct(product.id, values);
-      // queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: productQueryKeys.all });
       onClose?.();
     } catch (error) {
       console.error('Failed to update product:', error);
@@ -38,7 +39,7 @@ export const EditProductForm = ({
     setIsDeleting(true);
     try {
       await deleteProduct(product.id);
-      // queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: productQueryKeys.all });
       onClose?.();
     } catch (error) {
       console.error('Failed to delete product:', error);

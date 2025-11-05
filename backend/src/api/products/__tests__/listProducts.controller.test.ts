@@ -18,7 +18,9 @@ describe('listProducts.controller', () => {
     mockJson = vi.fn();
     mockStatus = vi.fn().mockReturnValue({ json: mockJson });
 
-    mockRequest = {};
+    mockRequest = {
+      query: {},
+    };
     mockResponse = {
       status: mockStatus,
       json: mockJson,
@@ -48,9 +50,47 @@ describe('listProducts.controller', () => {
 
     await listProducts(mockRequest as Request, mockResponse as Response);
 
-    expect(productsService.getAllProducts).toHaveBeenCalledOnce();
+    expect(productsService.getAllProducts).toHaveBeenCalledWith(undefined);
     expect(mockStatus).toHaveBeenCalledWith(200);
     expect(mockJson).toHaveBeenCalledWith({ products: mockProducts });
+  });
+
+  it('passes search query to service when provided', async () => {
+    const mockProducts: Product[] = [
+      {
+        id: '123e4567-e89b-12d3-a456-426614174000',
+        title: 'Queen Album',
+        artist: 'Queen',
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z',
+        image: {
+          url: 'http://example.com/image.jpg',
+          width: 1200,
+          height: 1200,
+          format: 'jpeg',
+        },
+      },
+    ];
+
+    mockRequest.query = { q: 'queen' };
+    vi.mocked(productsService.getAllProducts).mockResolvedValue(mockProducts);
+
+    await listProducts(mockRequest as Request, mockResponse as Response);
+
+    expect(productsService.getAllProducts).toHaveBeenCalledWith('queen');
+    expect(mockStatus).toHaveBeenCalledWith(200);
+    expect(mockJson).toHaveBeenCalledWith({ products: mockProducts });
+  });
+
+  it('returns empty array when search matches no products', async () => {
+    mockRequest.query = { q: 'nonexistent' };
+    vi.mocked(productsService.getAllProducts).mockResolvedValue([]);
+
+    await listProducts(mockRequest as Request, mockResponse as Response);
+
+    expect(productsService.getAllProducts).toHaveBeenCalledWith('nonexistent');
+    expect(mockStatus).toHaveBeenCalledWith(200);
+    expect(mockJson).toHaveBeenCalledWith({ products: [] });
   });
 
   it('returns 500 on service error', async () => {

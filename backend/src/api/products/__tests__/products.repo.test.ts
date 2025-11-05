@@ -1,10 +1,90 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import prisma from '@f/prismaInstance';
-import { deleteProduct } from '../products.repo';
+import { deleteProduct, getAllProducts } from '../products.repo';
+
+const mockProduct = (overrides = {}) => ({
+  id: '123e4567-e89b-12d3-a456-426614174000',
+  title: 'Test Product',
+  artist: 'Test Artist',
+  version: 'v1',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  image: {
+    id: 'img-123',
+    productId: '123e4567-e89b-12d3-a456-426614174000',
+    storageKey: 'test-key',
+    width: 500,
+    height: 500,
+    format: 'jpeg' as const,
+    createdAt: new Date(),
+  },
+  ...overrides,
+});
 
 describe('products.repo', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  describe('getAllProducts', () => {
+    it('retrieves all products without search filter', async () => {
+      const products = [mockProduct(), mockProduct({ id: '456' })];
+      vi.mocked(prisma.product.findMany).mockResolvedValue(products);
+
+      const result = await getAllProducts();
+
+      expect(prisma.product.findMany).toHaveBeenCalledWith({
+        where: {},
+        include: { image: true },
+        orderBy: { createdAt: 'desc' },
+      });
+      expect(result).toEqual(products);
+    });
+
+    it('searches products by title (case-insensitive)', async () => {
+      const products = [mockProduct({ title: 'Queen Album' })];
+      vi.mocked(prisma.product.findMany).mockResolvedValue(products);
+
+      const result = await getAllProducts('queen');
+
+      expect(prisma.product.findMany).toHaveBeenCalledWith({
+        where: {
+          OR: [
+            { title: { contains: 'queen', mode: 'insensitive' } },
+            { artist: { contains: 'queen', mode: 'insensitive' } },
+          ],
+        },
+        include: { image: true },
+        orderBy: { createdAt: 'desc' },
+      });
+      expect(result).toEqual(products);
+    });
+
+    it('searches products by artist (case-insensitive)', async () => {
+      const products = [mockProduct({ artist: 'Blur' })];
+      vi.mocked(prisma.product.findMany).mockResolvedValue(products);
+
+      await getAllProducts('blur');
+
+      expect(prisma.product.findMany).toHaveBeenCalledWith({
+        where: {
+          OR: [
+            { title: { contains: 'blur', mode: 'insensitive' } },
+            { artist: { contains: 'blur', mode: 'insensitive' } },
+          ],
+        },
+        include: { image: true },
+        orderBy: { createdAt: 'desc' },
+      });
+    });
+
+    it('returns empty array when no products match search', async () => {
+      vi.mocked(prisma.product.findMany).mockResolvedValue([]);
+
+      const result = await getAllProducts('nonexistent');
+
+      expect(result).toEqual([]);
+    });
   });
 
   describe('deleteProduct', () => {

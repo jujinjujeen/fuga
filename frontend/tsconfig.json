@@ -5,7 +5,11 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "paths": {
+      "@f/types/*": ["../libs/types/*"],
+      "@f/fe/*": ["./src/*"]
+    }
   },
   "extends": "../config/tsconfig.base.json"
 }

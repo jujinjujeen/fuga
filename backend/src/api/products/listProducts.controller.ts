@@ -3,10 +3,12 @@ import { getAllProducts } from './products.service';
 
 /**
  * GET /products - List all products
+ * Supports optional search query via 'q' parameter
  */
-export const listProducts = async (_req: Request, res: Response) => {
+export const listProducts = async (req: Request, res: Response) => {
   try {
-    const products = await getAllProducts();
+    const search = req.query.q as string | undefined;
+    const products = await getAllProducts(search);
 
     res.status(200).json({ products });
   } catch (error) {

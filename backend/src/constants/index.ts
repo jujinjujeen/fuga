@@ -2,6 +2,7 @@
 export const TIME_MS = {
   ONE_SECOND: 1000,
   ONE_MINUTE: 60 * 1000,
+  FIVE_MINUTES: 5 * 60 * 1000,
   FIFTEEN_MINUTES: 15 * 60 * 1000,
 };
 

@@ -1,13 +1,12 @@
-import { useEffect, useState } from 'react';
 import { ProductCard } from '../ProductCard';
 import { LoadingSpinner } from '@f/fe/components/UI/LoadingSpinner';
 import { ErrorMessage } from '@f/fe/components/UI/ErrorMessage';
 import { EmptyState } from '@f/fe/components/UI/EmptyState';
-import { getProducts } from '../../api/getProducts';
+import { useProducts } from '../../hooks/useProducts';
 import type { Product } from '@f/types/api-schemas';
 
 interface ProductListProps {
-  refreshTrigger?: number;
+  search?: string;
   onProductClick?: (product: Product) => void;
 }
 
@@ -15,38 +14,10 @@ interface ProductListProps {
  * ProductList - Grid layout of product cards
  */
 export const ProductList: React.FC<ProductListProps> = ({
-  refreshTrigger = 0,
+  search,
   onProductClick,
 }) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await getProducts();
-
-        // Check if response is an error
-        if ('title' in response) {
-          throw new Error(response.message || 'Failed to fetch products');
-        }
-
-        setProducts(response.products);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to load products'
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, [refreshTrigger]);
+  const { products, isLoading, error } = useProducts(search);
 
   if (isLoading) {
     return (
@@ -67,7 +38,13 @@ export const ProductList: React.FC<ProductListProps> = ({
   if (products.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <EmptyState message="No products found. Add your first product to get started!" />
+        <EmptyState
+          message={
+            search
+              ? `No products found for "${search}"`
+              : 'No products found. Add your first product to get started!'
+          }
+        />
       </div>
     );
   }

@@ -4,7 +4,6 @@ import { userEvent } from '@testing-library/user-event';
 import { EditProductForm } from '../components/EditProductForm';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Theme } from '@radix-ui/themes';
-import * as updateProductModule from '../api/updateProduct';
 import * as deleteProductModule from '../api/deleteProduct';
 import type { Product } from '@f/types/api-schemas';
 
