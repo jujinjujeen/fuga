@@ -1,6 +1,5 @@
 import { Outlet, useNavigate } from 'react-router';
-import { ControlBar } from '../components/ControlBar';
-import { ProductList } from '../components/ProductList';
+import { ControlBar, ProductList } from '../features/products/components';
 import { PageLayout } from '../layouts/PageLayout';
 import type { Product } from '@f/types/api-schemas';
 
