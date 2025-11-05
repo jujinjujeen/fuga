@@ -8,6 +8,7 @@ import type { Product } from '@f/types/api-schemas';
 
 interface ProductListProps {
   refreshTrigger?: number;
+  onProductClick?: (product: Product) => void;
 }
 
 /**
@@ -15,6 +16,7 @@ interface ProductListProps {
  */
 export const ProductList: React.FC<ProductListProps> = ({
   refreshTrigger = 0,
+  onProductClick,
 }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -78,7 +80,7 @@ export const ProductList: React.FC<ProductListProps> = ({
     >
       {products.map((product) => (
         <div key={product.id} role="listitem">
-          <ProductCard product={product} />
+          <ProductCard product={product} onClick={onProductClick} />
         </div>
       ))}
     </div>

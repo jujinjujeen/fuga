@@ -3,19 +3,26 @@ import { Sidebar } from '@f/fe/components/UI/Sidebar';
 import { CreateProductForm } from './CreateProductForm';
 import { EditProductForm } from './EditProductForm';
 import { Package, X } from 'lucide-react';
+import type { Product } from '@f/types/api-schemas';
 
 type ProductSidebarProps = Omit<SidebarProps, 'children'> & {
   mode: 'create' | 'edit';
+  product?: Product;
+  etag?: string;
+  onSuccess?: () => void;
 };
 
 export const ProductSidebar: React.FC<ProductSidebarProps> = ({
   isOpen,
   mode,
+  product,
+  etag,
+  onSuccess,
   onClose,
 }) => {
   return (
     <Sidebar isOpen={isOpen} onClose={onClose}>
-      <div className='h-full flex flex-col'>
+      <div className="h-full flex flex-col">
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
@@ -35,7 +42,16 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
           </button>
         </div>
 
-        {mode === 'create' ? <CreateProductForm /> : <EditProductForm />}
+        {mode === 'create' ? (
+          <CreateProductForm onSuccess={onSuccess} onClose={onClose} />
+        ) : product && etag ? (
+          <EditProductForm
+            product={product}
+            etag={etag}
+            onSuccess={onSuccess}
+            onClose={onClose}
+          />
+        ) : null}
       </div>
     </Sidebar>
   );

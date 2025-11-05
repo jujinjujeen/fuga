@@ -4,18 +4,27 @@ import { ProductImage } from './ProductImage';
 
 interface ProductCardProps {
   product: Product;
+  onClick?: (product: Product) => void;
 }
 
 /**
  * ProductCard - Displays a single product in a card layout
  */
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  onClick,
+}) => {
   const { title, artist, image } = product;
+
+  const handleClick = () => {
+    onClick?.(product);
+  };
 
   return (
     <Card
       variant="surface"
       className="group overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 cursor-pointer bg-white "
+      onClick={handleClick}
     >
       {/* Album Cover */}
       <ProductImage image={image} title={title} />

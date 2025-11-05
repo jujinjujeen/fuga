@@ -1,14 +1,10 @@
 import { useState } from 'react';
 import { ControlBar } from '../components/ControlBar';
-import { Sidebar } from '../components/UI/Sidebar';
-// import { CreateProductForm, EditProductForm } from '../components/ProductForm';
-
 import { ProductList } from '../components/ProductList';
 import { PageLayout } from '../layouts/PageLayout';
-import { getProductForEdit } from '../api/products';
 import type { Product } from '@f/types/api-schemas';
-import { CreateProductForm } from '../features/product/components/CreateProductForm';
 import { ProductSidebar } from '../features/product/components/ProductSidebar';
+import { getProduct } from '../features/product/api/getProduct';
 
 export const HomePage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,8 +31,9 @@ export const HomePage = () => {
   const handleProductClick = async (product: Product) => {
     try {
       // Fetch product with ETag for optimistic concurrency control
-      const { product: freshProduct, etag: freshEtag } =
-        await getProductForEdit(product.id);
+      const { product: freshProduct, etag: freshEtag } = await getProduct(
+        product.id
+      );
       setSelectedProduct(freshProduct);
       setEtag(freshEtag);
       setIsOpen(true);
@@ -57,27 +54,14 @@ export const HomePage = () => {
         onProductClick={handleProductClick}
       />
 
-      {/* Generic Sidebar with separate Create/Edit forms */}
-      {/* <Sidebar isOpen={isOpen} onClose={handleClose} ariaLabel="Product form"> */}
-      {/* {selectedProduct && etag ? (
-          <EditProductForm
-            key={`edit-${selectedProduct.id}`}
-            product={selectedProduct}
-            productId={selectedProduct.id}
-            etag={etag}
-            onSuccess={handleProductSuccess}
-            onClose={handleClose}
-          />
-        ) : (
-          <CreateProductForm
-            key="create"
-            onSuccess={handleProductSuccess}
-            onClose={handleClose}
-          />
-        )} */}
-      {/* <CreateProductForm /> */}
-      {/* </Sidebar> */}
-      <ProductSidebar isOpen={isOpen} onClose={handleClose} mode={'create'} />
+      <ProductSidebar
+        isOpen={isOpen}
+        onClose={handleClose}
+        mode={selectedProduct ? 'edit' : 'create'}
+        product={selectedProduct || undefined}
+        etag={etag || undefined}
+        onSuccess={handleProductSuccess}
+      />
     </PageLayout>
   );
 };

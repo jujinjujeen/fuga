@@ -16,7 +16,7 @@ export const ImageUploadField: React.FC<Props> = ({
   name = 'imageKey',
   label = 'Product Image',
 }) => {
-  const { status, error, previewUrl, upload } = useImageUpload();
+  const { status, error, previewUrl, upload } = useImageUpload(form.getValues(name) || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
