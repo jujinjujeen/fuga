@@ -4,10 +4,6 @@ import * as s3Module from '@f/be/lib/s3';
 import {
   ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
-import type {
-  ListObjectsV2CommandOutput,
-  DeleteObjectCommandOutput,
-} from '@aws-sdk/client-s3';
 
 // Mock S3 client
 vi.mock('@f/be/lib/s3', () => ({

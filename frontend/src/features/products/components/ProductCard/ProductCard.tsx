@@ -23,18 +23,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <Card
       variant="surface"
-      className="group overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 cursor-pointer bg-white "
+      className="group relative overflow-hidden rounded-lg bg-white border-0 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-1"
       onClick={handleClick}
     >
-      {/* Album Cover */}
       <ProductImage image={image} title={title} />
 
       {/* Product Info */}
-      <div className="p-4 space-y-1">
-        <h3 className="font-semibold text-gray-900  truncate text-lg">
+      <div className="p-4 space-y-1.5">
+        <h3 className="font-semibold text-gray-900 truncate text-sm leading-tight">
           {title}
         </h3>
-        <p className="text-sm text-gray-600 truncate">{artist}</p>
+        <p className="text-xs text-gray-500 truncate font-medium">{artist}</p>
       </div>
     </Card>
   );
