@@ -6,12 +6,16 @@ const populatePrismaMock = () => ({
   createMany: vi.fn(),
   findUnique: vi.fn(),
   findMany: vi.fn(),
+  update: vi.fn(),
+  delete: vi.fn(),
 });
 
 vi.mock('@f/prismaInstance', () => {
   return {
     default: {
-      products: populatePrismaMock(),
+      product: populatePrismaMock(),
+      image: populatePrismaMock(),
+      $queryRaw: vi.fn(),
     },
   };
 });

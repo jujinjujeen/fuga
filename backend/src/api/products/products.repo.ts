@@ -73,3 +73,29 @@ export const updateProduct = async (
     throw error;
   }
 };
+
+/**
+ * Deletes a product and its associated image
+ * @param id - Product UUID
+ * @returns Deleted product with image relation or null if not found
+ */
+export const deleteProduct = async (
+  id: string
+): Promise<ProductWithImage | null> => {
+  try {
+    return await prisma.product.delete({
+      where: { id },
+      include: {
+        image: true,
+      },
+    });
+  } catch (error) {
+    // Prisma throws P2025 when record to delete doesn't exist
+    if (error && typeof error === 'object' && 'code' in error) {
+      if (error.code === 'P2025') {
+        return null;
+      }
+    }
+    throw error;
+  }
+};

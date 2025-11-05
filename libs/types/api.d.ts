@@ -182,7 +182,31 @@ export interface paths {
                 404: components["responses"]["NotFound"];
             };
         };
-        delete?: never;
+        /**
+         * Delete product
+         * @description Deletes an existing product and its associated image
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    productId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Product deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                404: components["responses"]["NotFound"];
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;

@@ -104,6 +104,15 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+    delete:
+      summary: Delete product
+      description: Deletes an existing product and its associated image
+      responses:
+        '204':
+          description: Product deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /presign:
     post:
       summary: Get a presigned URL for image upload

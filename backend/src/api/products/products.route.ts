@@ -3,6 +3,7 @@ import { createProductController } from './createProduct.controller';
 import { listProducts } from './listProducts.controller';
 import { getProduct } from './getProduct.controller';
 import { updateProductController } from './updateProduct.controller';
+import { deleteProductController } from './deleteProduct.controller';
 import { validateRequest } from '../../middleware/validateRequest';
 import { createProductSchema, updateProductSchema } from './products.validation';
 
@@ -39,5 +40,11 @@ router.post(
   validateRequest(updateProductSchema, 'body'),
   updateProductController
 );
+
+/**
+ * DELETE /api/products/:productId
+ * Delete a product
+ */
+router.delete('/products/:productId', deleteProductController);
 
 export default router;

@@ -39,7 +39,7 @@ model Image {
 
   // Enforce one cover image per product (unique FK -> 1:1)
   productId String  @unique
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   // Upload info
   storageKey  String // object storage key for original (e.g., s3://bucket/uuid.jpg)

@@ -5,6 +5,7 @@ import {
   getAllProducts as getAllProductsDb,
   getProductById as getProductByIdDb,
   updateProduct as updateProductDb,
+  deleteProduct as deleteProductDb,
 } from './products.repo';
 import { deleteCache, getKeyHelper } from '@f/be/lib/redisClient';
 import {
@@ -172,4 +173,35 @@ export const updateProduct = async (
     }
     throw error;
   }
+};
+
+/**
+ * Deletes a product and its associated image from storage
+ *
+ * @param id - Product UUID
+ * @returns true if deleted, false if not found
+ */
+export const deleteProduct = async (id: string): Promise<boolean> => {
+  // Delete the product (cascade will delete the image record)
+  const deletedProduct = await deleteProductDb(id);
+
+  if (!deletedProduct) {
+    return false;
+  }
+
+  // Remove image from storage if it exists
+  if (deletedProduct.image) {
+    removeObject(deletedProduct.image.storageKey, 'perm').catch((err) => {
+      console.error(
+        `Failed to remove image ${deletedProduct.image?.storageKey}:`,
+        err
+      );
+    });
+  }
+
+  // Invalidate products cache
+  deleteCache(getKeyHelper('/products'));
+  deleteCache(getKeyHelper(`/products/${id}`));
+
+  return true;
 };
