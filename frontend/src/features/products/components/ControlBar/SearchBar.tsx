@@ -1,19 +1,14 @@
 import { TextField } from '@radix-ui/themes';
-import { useState } from 'react';
 import { Search, X } from 'lucide-react';
 
-export const SearchBar = () => {
-  const [search, setSearch] = useState('');
+interface SearchBarProps {
+  value: string;
+  onChange: (value: string) => void;
+}
 
-  const onInput = (text: string) => {
-    setSearch(text);
-    if (text.length > 3) {
-      // TODO: implement search functionality
-    }
-  };
-
+export const SearchBar = ({ value, onChange }: SearchBarProps) => {
   const clearSearch = () => {
-    setSearch('');
+    onChange('');
   };
 
   return (
@@ -22,15 +17,15 @@ export const SearchBar = () => {
       id="search"
       variant="soft"
       size={{ initial: '3', sm: '3' }}
-      value={search}
-      onChange={(e) => onInput(e.target.value)}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
       className="flex-1 min-w-0 shadow-md focus-within:shadow-lg transition-shadow"
       aria-label="Search products"
     >
       <TextField.Slot>
         <Search size={18} className="text-slate-500" aria-hidden="true" />
       </TextField.Slot>
-      {search && (
+      {value && (
         <TextField.Slot>
           <button
             onClick={clearSearch}
