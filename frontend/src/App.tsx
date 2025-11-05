@@ -1,13 +1,18 @@
 import { Route, Routes } from 'react-router';
+import HomePage from './pages/HomePage';
 import './App.css';
 import React from 'react';
 
-const HomePage = React.lazy(() => import('./pages/HomePage'));
+const CreateModal = React.lazy(() => import('./pages/CreateModal'));
+const EditModal = React.lazy(() => import('./pages/EditModal'));
 
 function App() {
   return (
     <Routes>
-      <Route index element={<HomePage />} />
+      <Route path="/" element={<HomePage />}>
+        <Route path="create" element={<CreateModal />} />
+        <Route path="edit/:productId" element={<EditModal />} />
+      </Route>
     </Routes>
   );
 }

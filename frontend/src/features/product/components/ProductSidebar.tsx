@@ -8,7 +8,6 @@ import type { Product } from '@f/types/api-schemas';
 type ProductSidebarProps = Omit<SidebarProps, 'children'> & {
   mode: 'create' | 'edit';
   product?: Product;
-  onSuccess?: () => void;
 };
 
 export const ProductSidebar: React.FC<ProductSidebarProps> = ({

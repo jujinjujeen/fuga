@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { UpdateProductInput } from './products.validation';
-import { updateProduct, getProductById } from './products.service';
+import { updateProduct } from './products.service';
 import { HTTP_STATUS, HTTP_LABEL } from '@f/be/constants';
 
 /**
