@@ -11,6 +11,7 @@ A searchable CRUD app for managing music products with image uploads. Built as a
 > **Prerequisites:** Node v24+, Docker, Docker Compose, existing .env
 
 ```bash
+make init-env           # Creates .env files from .env.example
 make up                 # Spins up everything (backend, frontend, DB, Redis, MinIO)
 ```
 
