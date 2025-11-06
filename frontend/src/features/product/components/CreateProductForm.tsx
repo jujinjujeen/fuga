@@ -4,6 +4,7 @@ import { useProductForm } from '../hooks/useProductForm';
 import { createProduct } from '../api/createProduct';
 import { ProductForm } from './common/ProductForm';
 import { productQueryKeys } from '@f/fe/features/products/queryKeys';
+import type { ProductFormValues } from '../types';
 
 interface CreateProductFormProps {
   onClose?: () => void;
@@ -14,7 +15,7 @@ export const CreateProductForm = ({ onClose }: CreateProductFormProps) => {
   const [submitting, setSubmitting] = useState(false);
   const queryClient = useQueryClient();
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: ProductFormValues) => {
     setSubmitting(true);
     try {
       await createProduct({

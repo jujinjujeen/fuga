@@ -108,7 +108,6 @@ describe('ImageUploadField', () => {
   });
 
   it('should trigger file input when upload button is clicked', async () => {
-    const user = userEvent.setup();
     render(<TestWrapper />);
 
     const fileInput = screen.getByLabelText('Upload product image');

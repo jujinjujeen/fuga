@@ -54,12 +54,12 @@ export function useImageUpload(initialImageUrl?: string) {
       setPreviewUrl(URL.createObjectURL(file));
       setStatus('done');
       return presigned.storageKey;
-    } catch (err: any) {
-      setError(err.message ?? 'Upload failed');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Upload failed');
       setStatus('error');
       return null;
     }
-  }, []);
+  }, [validateFile]);
 
   return {
     status,

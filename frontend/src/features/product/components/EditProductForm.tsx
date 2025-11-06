@@ -6,6 +6,7 @@ import { deleteProduct } from '../api/deleteProduct';
 import { ProductForm } from './common/ProductForm';
 import type { Product } from '@f/types/api-schemas';
 import { productQueryKeys } from '@f/fe/features/products/queryKeys';
+import type { ProductFormValues } from '../types';
 
 interface EditProductFormProps {
   product: Product;
@@ -21,7 +22,7 @@ export const EditProductForm = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: ProductFormValues) => {
     setSubmitting(true);
     try {
       await updateProduct(product.id, values);
