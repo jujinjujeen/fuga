@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { act } from 'react';
 import { useProductForm } from '../useProductForm';
 import type { Product } from '@f/types/api-schemas';

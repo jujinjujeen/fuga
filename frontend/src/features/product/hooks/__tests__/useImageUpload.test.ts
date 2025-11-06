@@ -4,6 +4,7 @@ import { act } from 'react';
 import { useImageUpload } from '../useImageUpload';
 import * as getPresignedUrlModule from '../../api/getPresignedUrl';
 import * as uploadFileToPresignedUrlModule from '../../api/uploadFileToPresignedUrl';
+import type { PresignResponse } from '@f/types/api-schemas';
 
 // Mock the API functions
 vi.mock('../../api/getPresignedUrl');
@@ -188,13 +189,13 @@ describe('useImageUpload', () => {
   });
 
   it('should update status to presigning during presign phase', async () => {
-    let resolvePresign: any;
-    const presignPromise = new Promise((resolve) => {
+    let resolvePresign: (value: PresignResponse) => void;
+    const presignPromise = new Promise<PresignResponse>((resolve) => {
       resolvePresign = resolve;
     });
 
     vi.mocked(getPresignedUrlModule.getPresignedUrl).mockReturnValueOnce(
-      presignPromise as any
+      presignPromise
     );
     vi.mocked(
       uploadFileToPresignedUrlModule.uploadFileToPresignedUrl
@@ -225,7 +226,7 @@ describe('useImageUpload', () => {
   });
 
   it('should update status to uploading during upload phase', async () => {
-    let resolveUpload: any;
+    let resolveUpload: () => void;
     const uploadPromise = new Promise<void>((resolve) => {
       resolveUpload = resolve;
     });
