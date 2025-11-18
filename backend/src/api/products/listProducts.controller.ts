@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { getAllProducts } from './products.service';
+import { HTTP_STATUS } from '@f/be/constants';
 
 /**
  * GET /products - List all products
@@ -15,7 +16,7 @@ export const listProducts = async (req: Request, res: Response) => {
     console.error('List products error:', error);
     const message =
       error instanceof Error ? error.message : 'Failed to fetch products';
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       title: 'Failed to Fetch Products',
       message,
     });
