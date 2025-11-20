@@ -4,12 +4,20 @@ import redis from '@f/redisClient';
 /**
  * Middleware to cache GET responses in Redis.
  * @param ttlSeconds Time to live in seconds for the cache
- * @returns 
+ * @returns
  */
 export function cacheMiddleware(ttlSeconds: number) {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    // Only cache GETs exclude health checks
-    if (req.method !== 'GET' || req.originalUrl.includes('health')) {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    // Only cache GETs exclude health checks and queries
+    if (
+      req.method !== 'GET' ||
+      req.originalUrl.includes('health') ||
+      req.originalUrl.includes('?')
+    ) {
       next();
       return;
     }
@@ -20,7 +28,7 @@ export function cacheMiddleware(ttlSeconds: number) {
       // short-circuit if we have it
       console.log(`Cache hit for ${cacheKey}`);
       res.json(JSON.parse(cached));
-      return
+      return;
     }
 
     // hijack send to capture payload

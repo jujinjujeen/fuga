@@ -3,7 +3,7 @@ import type { UseFormReturn } from 'react-hook-form';
 import type { ProductFormValues } from '../../types';
 
 interface ProductFieldProps {
-  id: 'title' | 'artist';
+  id: 'title' | 'artist' | 'upc';
   placeholder?: string;
   label: string;
   form: UseFormReturn<ProductFormValues>;
@@ -30,7 +30,7 @@ export const ProductField: React.FC<ProductFieldProps> = ({
         id={id}
         {...register(id)}
         placeholder={placeholder}
-        className={errors.title ? 'border-red-500' : ''}
+        className={errors[id] ? 'border-red-500' : ''}
       />
       {errors[id] && (
         <p className="text-sm text-red-600">{errors[id].message}</p>

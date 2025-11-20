@@ -1,11 +1,7 @@
-import { useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { useProductForm } from '../hooks/useProductForm';
-import { updateProduct } from '../api/updateProduct';
-import { deleteProduct } from '../api/deleteProduct';
+import { useUpdateProduct, useDeleteProduct } from '../hooks/useProductMutations';
 import { ProductForm } from './common/ProductForm';
 import type { Product } from '@f/types/api-schemas';
-import { productQueryKeys } from '@f/fe/features/products/queryKeys';
 import type { ProductFormValues } from '../types';
 
 interface EditProductFormProps {
@@ -18,36 +14,34 @@ export const EditProductForm = ({
   onClose,
 }: EditProductFormProps) => {
   const form = useProductForm(product);
-  const [submitting, setSubmitting] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const queryClient = useQueryClient();
+  const updateProductMutation = useUpdateProduct();
+  const deleteProductMutation = useDeleteProduct();
 
   const onSubmit = async (values: ProductFormValues) => {
-    setSubmitting(true);
-    try {
-      await updateProduct(product.id, values);
-      queryClient.invalidateQueries({ queryKey: productQueryKeys.all });
-      onClose?.();
-    } catch (error) {
-      console.error('Failed to update product:', error);
-      // Error handling can be improved with toast notifications
-    } finally {
-      setSubmitting(false);
-    }
+    updateProductMutation.mutate(
+      { id: product.id, product: values },
+      {
+        onSuccess: () => {
+          onClose?.();
+        },
+        onError: (error) => {
+          console.error('Failed to update product:', error);
+          // Error handling can be improved with toast notifications
+        },
+      }
+    );
   };
 
   const onDelete = async () => {
-    setIsDeleting(true);
-    try {
-      await deleteProduct(product.id);
-      queryClient.invalidateQueries({ queryKey: productQueryKeys.all });
-      onClose?.();
-    } catch (error) {
-      console.error('Failed to delete product:', error);
-      // Error handling can be improved with toast notifications
-    } finally {
-      setIsDeleting(false);
-    }
+    deleteProductMutation.mutate(product.id, {
+      onSuccess: () => {
+        onClose?.();
+      },
+      onError: (error) => {
+        console.error('Failed to delete product:', error);
+        // Error handling can be improved with toast notifications
+      },
+    });
   };
 
   return (
@@ -57,8 +51,8 @@ export const EditProductForm = ({
       onSubmit={onSubmit}
       onDelete={onDelete}
       mode="edit"
-      submitting={submitting}
-      isDeleting={isDeleting}
+      submitting={updateProductMutation.isPending}
+      isDeleting={deleteProductMutation.isPending}
     />
   );
 };

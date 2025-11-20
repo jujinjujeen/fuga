@@ -1,9 +1,6 @@
-import { useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { useProductForm } from '../hooks/useProductForm';
-import { createProduct } from '../api/createProduct';
+import { useCreateProduct } from '../hooks/useProductMutations';
 import { ProductForm } from './common/ProductForm';
-import { productQueryKeys } from '@f/fe/features/products/queryKeys';
 import type { ProductFormValues } from '../types';
 
 interface CreateProductFormProps {
@@ -12,24 +9,19 @@ interface CreateProductFormProps {
 
 export const CreateProductForm = ({ onClose }: CreateProductFormProps) => {
   const form = useProductForm();
-  const [submitting, setSubmitting] = useState(false);
-  const queryClient = useQueryClient();
+  const createProductMutation = useCreateProduct();
 
   const onSubmit = async (values: ProductFormValues) => {
-    setSubmitting(true);
-    try {
-      await createProduct({
-        ...values,
-      });
-      queryClient.invalidateQueries({ queryKey: productQueryKeys.all });
-      form.reset();
-      onClose?.();
-    } catch (error) {
-      console.error('Failed to create product:', error);
-      // Error handling can be improved with toast notifications
-    } finally {
-      setSubmitting(false);
-    }
+    createProductMutation.mutate(values, {
+      onSuccess: () => {
+        form.reset();
+        onClose?.();
+      },
+      onError: (error) => {
+        console.error('Failed to create product:', error);
+        // Error handling can be improved with toast notifications
+      },
+    });
   };
 
   return (
@@ -37,7 +29,7 @@ export const CreateProductForm = ({ onClose }: CreateProductFormProps) => {
       form={form}
       onSubmit={onSubmit}
       mode="create"
-      submitting={submitting}
+      submitting={createProductMutation.isPending}
     />
   );
 };

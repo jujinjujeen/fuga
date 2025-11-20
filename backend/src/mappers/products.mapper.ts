@@ -7,6 +7,7 @@ export const mapProduct = (product: ProductWithImage): Product => {
     id: product.id,
     title: product.title,
     artist: product.artist,
+    upc: product.upc,
     createdAt: product.createdAt.toISOString(),
     updatedAt: product.updatedAt.toISOString(),
     image: {

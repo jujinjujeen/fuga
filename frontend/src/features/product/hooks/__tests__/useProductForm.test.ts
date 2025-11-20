@@ -12,6 +12,7 @@ describe('useProductForm', () => {
       title: '',
       artist: '',
       imageKey: '',
+      upc: '',
     });
   });
 
@@ -32,6 +33,7 @@ describe('useProductForm', () => {
       title: 'Test Album',
       artist: 'Test Artist',
       imageKey: 'test-key-123',
+      upc: '',
     });
   });
 
@@ -48,6 +50,7 @@ describe('useProductForm', () => {
       title: 'Test Album',
       artist: 'Test Artist',
       imageKey: '',
+      upc: '',
     });
   });
 
@@ -72,6 +75,7 @@ describe('useProductForm', () => {
       title: 'New Title',
       artist: 'New Artist',
       imageKey: 'new-key-456',
+      upc: '',
     });
   });
 
@@ -105,6 +109,7 @@ describe('useProductForm', () => {
       title: 'Original Title',
       artist: 'Original Artist',
       imageKey: 'original-key',
+      upc: '',
     });
   });
 });

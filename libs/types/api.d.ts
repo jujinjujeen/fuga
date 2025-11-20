@@ -282,6 +282,7 @@ export interface components {
             id: string;
             title: string;
             artist: string;
+            upc: string;
             image?: components["schemas"]["ImageRef"];
             /** Format: date-time */
             createdAt: string;

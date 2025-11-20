@@ -14,7 +14,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   onClick,
 }) => {
-  const { title, artist, image } = product;
+  const { title, artist, image, upc } = product;
 
   const handleClick = () => {
     onClick?.(product);
@@ -33,6 +33,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <h3 className="font-semibold text-gray-900 truncate text-sm leading-tight">
           {title}
         </h3>
+        <span className="text-xs text-gray-500/80 truncate font-medium">
+          {upc}
+        </span>
         <p className="text-xs text-gray-500 truncate font-medium">{artist}</p>
       </div>
     </Card>

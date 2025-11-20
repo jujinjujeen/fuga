@@ -169,11 +169,12 @@ components:
 
     Product:
       type: Object
-      required: [id, title, artist, createdAt, updatedAt]
+      required: [id, title, artist, upc, createdAt, updatedAt]
       properties:
         id: { type: string, format: uuid }
         title: { type: string, minLength: 1, maxLength: 200 }
         artist: { type: string, minLength: 1, maxLength: 200 }
+        upc: { type: string, minLength: 12, maxLength: 12 }
         image:
           $ref: '#/components/schemas/ImageRef'
         createdAt: { type: string, format: date-time }

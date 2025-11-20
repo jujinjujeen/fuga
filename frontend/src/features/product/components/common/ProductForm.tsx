@@ -58,6 +58,12 @@ export const ProductForm = ({
               placeholder="Enter artist name"
               form={form}
             />
+            <ProductField
+              id="upc"
+              label="UPC"
+              placeholder="Enter UPC id"
+              form={form}
+            />
           </div>
 
           <div className="flex gap-3 pt-4 border-t border-gray-200">

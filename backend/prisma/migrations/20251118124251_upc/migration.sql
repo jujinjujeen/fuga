@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Product" ADD COLUMN     "upc" TEXT NOT NULL DEFAULT '000000000000';

@@ -17,6 +17,7 @@ enum ImageFormat {
 // ---------- Models ----------
 model Product {
   id     String @id @default(uuid())
+  upc    String @default("000000000000")
   title  String
   artist String
 
